@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Project Completion</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="formal.css">
+  <script src="step-progress.js"></script>
+</head>
+<body class="main-bg">
+  <div class="card">
+    <div class="step-indicator">
+    </div>
+    <div class="home-landing">
+      <div class="success-msg">
+        <span style="font-size: 1.5rem; margin-right: 0.5rem;">🎉</span>
+        Congratulations! Your project has been successfully submitted
+      </div>
+      <div class="home-title">Project Completed</div>
+      <div class="completion-desc">
+        <p>Your property improvement project has been successfully submitted. We will arrange the construction for you as soon as possible.</p>
+        <p>The contractor will contact you within 24 hours to confirm the specific construction arrangements.</p>
+      </div>
+      <div class="summary-card">
+        <h3 class="summary-title">Project Information Summary</h3>
+        <div id="projectSummary" class="summary-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Display project information summary
+    window.addEventListener('load', function() {
+      const projectSummary = document.getElementById('projectSummary');
+      const userProfile = sessionStorage.getItem('userProfile');
+      
+      let summaryHTML = '';
+      
+      // Get property information
+      const propertyInfo = JSON.parse(sessionStorage.getItem('propertyInfo') || '{}');
+      if (propertyInfo.propertyType) {
+        summaryHTML += `<p><strong>Property Type:</strong> ${propertyInfo.propertyType}</p>`;
+        summaryHTML += `<p><strong>Property Address:</strong> ${propertyInfo.propertyAddress}</p>`;
+      }
+      
+      // Get improvement measures
+      const improvementMeasures = JSON.parse(sessionStorage.getItem('improvementMeasures') || '{}');
+      if (improvementMeasures.improvements) {
+        summaryHTML += `<p><strong>Improvement Measures:</strong> ${improvementMeasures.improvements.join(', ')}</p>`;
+      }
+      
+      // Display different funding information based on user profile
+      if (userProfile === 'A') {
+        summaryHTML += `<p><strong>Payment Method:</strong> Self-funded</p>`;
+      } else if (userProfile === 'B') {
+        const loanSelection = JSON.parse(sessionStorage.getItem('loanSelection') || '{}');
+        const loanAmount = loanSelection.selectedLoan ? 
+          (parseInt(loanSelection.selectedLoan.split('_')[2]) || 0) : 
+          (parseFloat(loanSelection.customAmount) || 0);
+        summaryHTML += `<p><strong>Bank Loan:</strong> £${loanAmount.toLocaleString()}</p>`;
+      } else if (userProfile === 'C') {
+        const welfareSelection = JSON.parse(sessionStorage.getItem('welfareSelection') || '{}');
+        const welfareAmount = welfareSelection.welfareAmount || 0;
+        summaryHTML += `<p><strong>Government Benefit Grant:</strong> £${welfareAmount.toLocaleString()}</p>`;
+      } else if (userProfile === 'D') {
+        const loanSelection = JSON.parse(sessionStorage.getItem('loanSelection') || '{}');
+        const loanAmount = loanSelection.selectedLoan ? 
+          (parseInt(loanSelection.selectedLoan.split('_')[2]) || 0) : 
+          (parseFloat(loanSelection.customAmount) || 0);
+        
+        const welfareSelection = JSON.parse(sessionStorage.getItem('welfareSelection') || '{}');
+        const welfareAmount = welfareSelection.welfareAmount || 0;
+        
+        summaryHTML += `<p><strong>Bank Loan:</strong> £${loanAmount.toLocaleString()}</p>`;
+        summaryHTML += `<p><strong>Government Benefit Grant:</strong> £${welfareAmount.toLocaleString()}</p>`;
+      }
+      
+      // Get contractor information
+      const contractorSelection = JSON.parse(sessionStorage.getItem('contractorSelection') || '{}');
+      if (contractorSelection.contractor) {
+        const contractorNames = {
+          'contractor1': 'Company A',
+          'contractor2': 'Company B',
+          'contractor3': 'Company C',
+          'contractor4': 'Company D'
+        };
+        summaryHTML += `<p><strong>Contractor:</strong> ${contractorNames[contractorSelection.contractor] || contractorSelection.contractor}</p>`;
+      }
+      
+      if (contractorSelection.projectBudget) {
+        summaryHTML += `<p><strong>Project Budget:</strong> £${parseFloat(contractorSelection.projectBudget).toLocaleString()}</p>`;
+      }
+      
+      projectSummary.innerHTML = summaryHTML;
+    });
+  </script>
+</body>
+</html> 

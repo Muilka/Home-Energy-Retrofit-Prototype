@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Contractor Selection and Payment</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="formal.css">
+  <script src="step-progress.js"></script>
+</head>
+<body class="main-bg">
+  <div class="card">
+    <div class="step-indicator" id="stepIndicator">
+    </div>
+
+    <div class="main-title">Select Contractor and Payment</div>
+    
+    <!-- Display funding support information (only for user profiles B, C, D) -->
+    <div id="fundingInfo" class="funding-info" style="display: none;">
+      <h3 class="funding-info-title">Funding Support Information</h3>
+      <div id="fundingDetails"></div>
+    </div>
+
+    <div class="option-question">Please select your preferred contractor and complete payment</div>
+    
+    <form id="contractorForm">
+      <div class="option-list">
+        <label>
+          <input type="radio" name="contractor" value="contractor1">
+          <span>
+            <strong>Company A</strong><br>
+            Rating: 4.8/5, Completed Projects: 150+, Estimated Duration: 2-3 months<br>
+          </span>
+        </label>
+        
+        <label>
+          <input type="radio" name="contractor" value="contractor2">
+          <span>
+            <strong>Company B</strong><br>
+            Rating: 4.6/5, Completed Projects: 80+, Estimated Duration: 1-2 months<br>
+
+          </span>
+        </label>
+        
+        <label>
+          <input type="radio" name="contractor" value="contractor3">
+          <span>
+            <strong>Company C</strong><br>
+            Rating: 4.9/5, Completed Projects: 200+, Estimated Duration: 2-3 months<br>
+          </span>
+        </label>
+        
+        <label>
+          <input type="radio" name="contractor" value="contractor4">
+          <span>
+            <strong>Company D</strong><br>
+            Rating: 4.7/5, Completed Projects: 120+, Estimated Duration: 2-4 months<br>
+          </span>
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label for="startDate" class="form-label">Expected Start Date</label>
+        <input type="date" id="startDate" name="startDate" class="form-input" required>
+      </div>
+      
+      
+      <!-- Payment method selection -->
+      <div class="form-group">
+        <label for="paymentMethod" class="form-label">Payment Method *</label>
+        <select id="paymentMethod" name="paymentMethod" class="form-input" required>
+          <option value="">Please select payment method</option>
+          <option value="card">Credit/Debit Card</option>
+          <option value="paypal">PayPal</option>
+          <option value="applepay">Apple Pay</option>
+          <option value="googlepay">Google Pay</option>
+          <option value="wise">Wise</option>
+          <option value="alipay">Alipay</option>
+        </select>
+      </div>
+      
+      <!-- Card information section, only shown when card is selected -->
+      <div id="cardInfoSection" style="display:none;">
+        <div class="form-group">
+          <label for="cardNumber" class="form-label">Card Number</label>
+          <input type="text" id="cardNumber" name="cardNumber" class="form-input" placeholder="Please enter card number">
+        </div>
+        <div class="form-group">
+          <label for="cardHolder" class="form-label">Cardholder Name</label>
+          <input type="text" id="cardHolder" name="cardHolder" class="form-input" placeholder="Please enter cardholder name">
+        </div>
+        <div class="form-group">
+          <label for="cardExpiry" class="form-label">Expiry Date</label>
+          <input type="text" id="cardExpiry" name="cardExpiry" class="form-input" placeholder="MM/YY">
+        </div>
+        <div class="form-group">
+          <label for="cardCVV" class="form-label">CVV</label>
+          <input type="text" id="cardCVV" name="cardCVV" class="form-input" placeholder="CVV">
+        </div>
+      </div>
+      
+      <button type="submit" class="btn-main full-width">Confirm Payment</button>
+    </form>
+  </div>
+
+  <script>
+    // Initialize when page loads
+    window.addEventListener('load', function() {
+      const userProfile = sessionStorage.getItem('userProfile');
+      // Unified progress bar system will automatically handle progress bar display
+      // Display corresponding funding support information based on user profile
+      if (userProfile !== 'A') {
+        showFundingInfo(userProfile);
+      }
+      // Toggle card information display based on payment method
+      const paymentMethod = document.getElementById('paymentMethod');
+      const cardInfoSection = document.getElementById('cardInfoSection');
+      const updateCardInfoSection = () => {
+        cardInfoSection.style.display = (paymentMethod.value === 'card') ? '' : 'none';
+      };
+      if (paymentMethod && cardInfoSection) {
+        paymentMethod.addEventListener('change', updateCardInfoSection);
+        updateCardInfoSection();
+      }
+    });
+
+    // Display funding support information
+    function showFundingInfo(userProfile) {
+      const fundingInfo = document.getElementById('fundingInfo');
+      const fundingDetails = document.getElementById('fundingDetails');
+      fundingInfo.style.display = 'block';
+      // Calculate total improvement costs
+      const selectedImprovements = JSON.parse(sessionStorage.getItem('selectedImprovements') || '[]');
+      const totalCost = selectedImprovements.reduce((sum, item) => sum + (item.costValue || 0), 0);
+      // Unified reading of loan and benefit amounts
+      let loanAmount = 0, welfareAmount = 0, bankName = '';
+      // Loan amount
+      const loanSelection = JSON.parse(sessionStorage.getItem('loanSelection') || '{}');
+      if (loanSelection.selectedLoan) {
+        const parts = loanSelection.selectedLoan.split('_');
+        loanAmount = parseInt(parts[2] || '0');
+        const ukBanks = {
+          barclays: 'Barclays Bank',
+          hsbc: 'HSBC UK',
+          lloyds: 'Lloyds Bank',
+          natwest: 'NatWest',
+          santander: 'Santander UK',
+          nationwide: 'Nationwide Building Society'
+        };
+        bankName = ukBanks[parts[0]] || '';
+      }
+      // Benefit amount (read regardless of user profile)
+      const welfareSelection = JSON.parse(sessionStorage.getItem('welfareSelection') || '{}');
+      welfareAmount = parseFloat(welfareSelection.welfareAmount) || 0;
+      // Total funding support
+      const fundingTotal = loanAmount + welfareAmount;
+      // Build display content
+      let fundingHtml = '';
+      fundingHtml += `<div style="font-size:1.1rem;margin-bottom:0.5rem;">Total Improvement Costs: <span style='color:#0d9488;font-weight:bold;'>£${totalCost}</span></div>`;
+      if (bankName) fundingHtml += `<div style="font-size:1.05rem;margin-bottom:0.5rem;">Loan Provider Bank: <span style="color:#2563eb;font-weight:bold;">${bankName}</span></div>`;
+      if (userProfile === 'A') {
+        fundingDetails.innerHTML = fundingHtml;
+        return;
+      }
+      fundingHtml += `<div style="font-size:1.1rem;margin-bottom:0.5rem;">Total Funding Support: <span style='color:#2563eb;font-weight:bold;'>£${fundingTotal}</span></div>`;
+      if (fundingTotal < totalCost) {
+        fundingHtml += `<div style="font-size:1.1rem;margin-bottom:0.5rem;">Remaining Payment Amount: <span style='color:#dc2626;font-weight:bold;'>£${totalCost - fundingTotal}</span></div>`;
+        fundingHtml += `<div class="pay-tip" style="color:#64748b;font-size:0.95rem;">Please choose another payment method for the remaining amount</div>`;
+      } else {
+        fundingHtml += `<div style="font-size:1.1rem;color:#059669;font-weight:bold;">Funding support covers all improvement costs, no additional payment required</div>`;
+      }
+      fundingDetails.innerHTML = fundingHtml;
+    }
+    
+    // Form submission handling
+    document.getElementById('contractorForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const selectedContractor = document.querySelector('input[name="contractor"]:checked');
+      if (!selectedContractor) {
+        alert('Please select a contractor');
+        return;
+      }
+      
+      // Get form data
+      const formData = new FormData(this);
+      const contractorData = Object.fromEntries(formData.entries());
+      
+      // Save contractor selection information
+      sessionStorage.setItem('contractorSelection', JSON.stringify(contractorData));
+      
+      // Display payment success message
+      alert('Payment successful! Your project has been confirmed, the contractor will contact you soon to arrange construction matters.');
+      
+      // Navigate to completion page
+      window.location.href = 'completion.html';
+    });
+  </script>
+</body>
+</html> 

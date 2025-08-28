@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Property Information Collection</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="formal.css">
+  <script src="step-progress.js"></script>
+</head>
+<body class="main-bg">
+  <div class="card">
+    <div class="step-indicator">
+    </div>
+
+    <div class="main-title">Property Information Collection</div>
+    <div class="desc">Please provide your basic property information</div>
+    
+    <form id="propertyForm">
+      <!-- Basic Information Input -->
+      <div class="form-group">
+        <label for="propertyAddress" class="form-label">Address</label>
+        <input type="text" id="propertyAddress" name="propertyAddress" class="form-input" required placeholder="Please enter detailed address">
+      </div>
+      
+      <div class="form-group">
+        <label for="postcode" class="form-label">Postcode</label>
+        <input type="text" id="postcode" name="postcode" class="form-input" required placeholder="Please enter postcode">
+      </div>
+      
+      <div class="form-group">
+        <label for="propertySize" class="form-label">Property Area (square meters) </label>
+        <input type="number" id="propertySize" name="propertySize" class="form-input" required placeholder="Please enter property area" min="1" step="1">
+      </div>
+      
+      <!-- Property Type Selection -->
+      <div class="form-group">
+        <label for="propertyType" class="form-label">What type of property is it? </label>
+        <select id="propertyType" name="propertyType" class="form-input" required>
+          <option value="">Please select property type</option>
+          <option value="detached_house">Detached House</option>
+          <option value="semi_detached">Semi-Detached House</option>
+          <option value="terraced_house">Terraced House</option>
+          <option value="flat_apartment">Flat / Apartment</option>
+          <option value="maisonette">Maisonette</option>
+          <option value="bungalow">Bungalow</option>
+          <option value="converted_properties">Converted Properties</option>
+        </select>
+      </div>
+      
+      <!-- Property Construction Questions -->
+      <div class="form-group">
+        <label for="wallType" class="form-label">Wall Construction </label>
+        <select id="wallType" name="wallType" class="form-input" required>
+          <option value="">Please select wall type</option>
+          <option value="solid_walls">Solid walls</option>
+          <option value="cavity_walls">Cavity walls</option>
+          <option value="timber_frame">Timber frame</option>
+          <option value="insulated_walls">Insulated walls</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="windowType" class="form-label">Window Type </label>
+        <select id="windowType" name="windowType" class="form-input" required>
+          <option value="">Please select window type</option>
+          <option value="single_glazing">Single glazing</option>
+          <option value="double_glazing">Double glazing</option>
+          <option value="triple_glazing">Triple glazing</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="roofType" class="form-label">Roof & Loft Insulation </label>
+        <select id="roofType" name="roofType" class="form-input" required>
+          <option value="">Please select roof insulation type</option>
+          <option value="no_insulation">No loft insulation</option>
+          <option value="less_100mm">Insulation thickness <100mm</option>
+          <option value="more_270mm">Insulation thickness >=270mm</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="floorType" class="form-label">Floor Construction </label>
+        <select id="floorType" name="floorType" class="form-input" required>
+          <option value="">Please select floor construction</option>
+          <option value="uninsulated_solid">Uninsulated Solid Floor</option>
+          <option value="insulated_solid">Insulated Solid Floor</option>
+          <option value="uninsulated_suspended">Uninsulated Suspended Floor</option>
+          <option value="insulated_suspended">Insulated Suspended Floor</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="epcRating" class="form-label">What is the property's EPC energy efficiency rating? </label>
+        <select id="epcRating" name="epcRating" class="form-input" required>
+          <option value="">Please select EPC energy efficiency rating</option>
+          <option value="A">A (92-100)</option>
+          <option value="B">B (81-91)</option>
+          <option value="C">C (69-80)</option>
+          <option value="D">D (55-68)</option>
+          <option value="E">E (39-54)</option>
+          <option value="F">F (21-38)</option>
+          <option value="G">G (1-20)</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="heatingSystem" class="form-label">What is the heating system? </label>
+        <select id="heatingSystem" name="heatingSystem" class="form-input" required>
+          <option value="">Please select heating system</option>
+          <option value="gas_boiler">Gas boiler</option>
+          <option value="electric_heating">Electric heating</option>
+          <option value="oil_boiler">Oil boiler</option>
+          <option value="heat_pump">Heat pump</option>
+          <option value="biomass_boiler">Biomass boiler</option>
+          <option value="solar_thermal">Solar thermal system</option>
+          <option value="storage_heater">Storage heater</option>
+          <option value="no_heating">No heating system</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="heatingFuel" class="form-label">What is the heating fuel type? </label>
+        <select id="heatingFuel" name="heatingFuel" class="form-input" required>
+          <option value="">Please select heating fuel type</option>
+          <option value="natural_gas">Natural gas</option>
+          <option value="electricity">Electricity</option>
+          <option value="oil">Oil</option>
+          <option value="lpg">LPG</option>
+          <option value="biomass">Biomass</option>
+          <option value="coal">Coal</option>
+          <option value="wood">Wood</option>
+          <option value="solar">Solar</option>
+          <option value="none">No fuel</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="smartMeter" class="form-label">Is a smart meter installed? </label>
+        <select id="smartMeter" name="smartMeter" class="form-input" required>
+          <option value="">Please select smart meter status</option>
+          <option value="yes">Yes, installed</option>
+          <option value="no">No, not installed</option>
+        </select>
+      </div>
+      
+      <button type="submit" class="btn-main full-width">Next: Improvement Measures</button>
+    </form>
+  </div>
+
+  <script>
+    // Restrict property area to numbers only
+    document.getElementById('propertySize').addEventListener('input', function(e) {
+      // Remove non-numeric characters
+      this.value = this.value.replace(/[^0-9]/g, '');
+    });
+    
+    document.getElementById('propertyForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Get form data
+      const formData = new FormData(this);
+      const propertyData = Object.fromEntries(formData.entries());
+      
+      // Save property information to sessionStorage
+      sessionStorage.setItem('propertyInfo', JSON.stringify(propertyData));
+      
+      // Navigate to improvement measures page
+      window.location.href = 'step2-improvement-measures.html';
+    });
+  </script>
+</body>
+</html> 

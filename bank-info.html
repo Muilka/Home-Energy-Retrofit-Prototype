@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bank Information Collection</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="formal.css">
+  <script src="step-progress.js"></script>
+</head>
+<body class="main-bg">
+  <div class="card">
+    <div class="step-indicator">
+    </div>
+
+    <div class="main-title">Bank Information Collection</div>
+    <div class="desc">Please provide your personal bank information for loan application</div>
+    
+    <form id="bankForm">
+      <div class="form-group">
+        <label for="idNumber" class="form-label">ID Number</label>
+        <input class="form-input" type="text" id="idNumber" name="idNumber" required placeholder="Please enter your ID Number">
+      </div>
+      
+      <div class="form-group">
+        <label for="age" class="form-label">Age</label>
+        <input class="form-input" type="number" id="age" name="age" min="18" max="120" required placeholder="Please enter your age" readonly>
+      </div>
+      
+      <div class="form-group">
+        <label for="accountNumber" class="form-label">Bank Account Number</label>
+        <input class="form-input" type="text" id="accountNumber" name="accountNumber" required placeholder="Please enter bank account number">
+      </div>
+      
+      <div class="form-group">
+        <label for="annualIncome" class="form-label">Annual Income (£)</label>
+        <input class="form-input" type="number" id="annualIncome" name="annualIncome" required placeholder="Please enter annual income" readonly>
+      </div>
+      
+      <div class="form-group">
+        <label for="employmentType" class="form-label">Employment Type</label>
+        <select class="form-input" id="employmentType" name="employmentType" required>
+          <option value="">Please select employment type</option>
+          <option value="fulltime">Full-time work</option>
+          <option value="parttime">Part-time work</option>
+          <option value="selfemployed">Self-employed</option>
+          <option value="business">Business owner</option>
+          <option value="retired">Retired</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="householdSize" class="form-label">Household Size</label>
+        <input class="form-input" type="number" id="householdSize" name="householdSize" required placeholder="Household size" readonly>
+      </div>
+      
+      <div class="form-group">
+        <label for="workYears" class="form-label">Work Years</label>
+        <input class="form-input" type="number" id="workYears" name="workYears" required placeholder="Please enter work years">
+      </div>
+      
+      <div class="form-group">
+        <label for="creditScore" class="form-label">Credit Score</label>
+        <input class="form-input" type="number" id="creditScore" name="creditScore" min="0" max="999" required placeholder="Please enter credit score (0-999 points)">
+      </div>
+      
+      <button type="submit" class="btn-main full-width">Next: Loan Selection</button>
+    </form>
+  </div>
+
+  <script>
+    // Auto-fill age, income, and household size information when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      const welfareInfo = JSON.parse(sessionStorage.getItem('welfareInfo') || '{}');
+      const ageInput = document.getElementById('age');
+      const incomeInput = document.getElementById('annualIncome');
+      const householdSizeInput = document.getElementById('householdSize');
+      
+      if (welfareInfo.age) {
+        ageInput.value = welfareInfo.age;
+      } else {
+        // If no age information, show prompt
+        ageInput.placeholder = 'Please complete benefit eligibility information collection first';
+        ageInput.disabled = true;
+      }
+      
+      if (welfareInfo.householdIncome) {
+        incomeInput.value = welfareInfo.householdIncome;
+      } else {
+        // If no income information, show prompt
+        incomeInput.placeholder = 'Please complete benefit eligibility information collection first';
+        incomeInput.disabled = true;
+      }
+      
+      if (welfareInfo.householdSize) {
+        householdSizeInput.value = welfareInfo.householdSize;
+      } else {
+        // If no household size information, show prompt
+        householdSizeInput.placeholder = 'Please complete benefit eligibility information collection first';
+        householdSizeInput.disabled = true;
+      }
+    });
+
+    // Credit score input restrictions
+    document.getElementById('creditScore').addEventListener('input', function(e) {
+      let inputValue = this.value;
+      
+      // If input is not a number, clear the input
+      if (!/^\d*$/.test(inputValue)) {
+        this.value = inputValue.replace(/\D/g, '');
+        return;
+      }
+      
+      // Limit range to 0-999
+      let numValue = parseInt(inputValue);
+      if (numValue > 999) {
+        // If exceeds 999, prevent input
+        this.value = inputValue.slice(0, -1);
+      }
+    });
+
+    document.getElementById('bankForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Get form data
+      const formData = new FormData(this);
+      const bankData = Object.fromEntries(formData.entries());
+      
+      // Save bank information to sessionStorage
+      sessionStorage.setItem('bankInfo', JSON.stringify(bankData));
+      
+      // Navigate to loan selection page
+      window.location.href = 'loan-selection.html';
+    });
+  </script>
+</body>
+</html> 

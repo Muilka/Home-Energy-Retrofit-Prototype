@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Select User Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="formal.css">
+</head>
+<body class="main-bg">
+  <div class="card">
+    <div class="main-title">Select Your User Profile</div>
+    <div class="desc">Please select an appropriate user profile based on your financial situation. This will determine the subsequent process steps.</div>
+    
+    <div class="option-list">
+      <label onclick="selectProfile('A')">
+        <input type="radio" name="profile" value="A">
+        <span>
+          <strong>User Profile A: Self-Payment</strong><br>
+          Cover all costs with your own income
+        </span>
+      </label>
+      
+      <label onclick="selectProfile('B')">
+        <input type="radio" name="profile" value="B">
+        <span>
+          <strong>User Profile B: Apply for Loan</strong><br>
+          Need to apply for additional loans to cover partial costs
+        </span>
+      </label>
+      
+      <label onclick="selectProfile('C')">
+        <input type="radio" name="profile" value="C">
+        <span>
+          <strong>User Profile C: Apply for Government Benefits</strong><br>
+          Want to apply for government benefit grants to cover partial costs
+        </span>
+      </label>
+      
+      <label onclick="selectProfile('D')">
+        <input type="radio" name="profile" value="D">
+        <span>
+          <strong>User Profile D: Loan + Government Benefits</strong><br>
+          Want to apply for additional loans and government benefit grants to cover partial costs
+        </span>
+      </label>
+    </div>
+    
+    <button id="continueBtn" class="btn-main full-width" onclick="continueToNext()" disabled>Continue</button>
+  </div>
+
+  <script>
+    let selectedProfile = null;
+    
+    function selectProfile(profile) {
+      selectedProfile = profile;
+      document.getElementById('continueBtn').disabled = false;
+      
+      // Update selection status
+      document.querySelectorAll('input[name="profile"]').forEach(input => {
+        input.checked = input.value === profile;
+      });
+    }
+    
+    function continueToNext() {
+      if (!selectedProfile) {
+        alert('Please select a user profile first');
+        return;
+      }
+      
+      // Save user profile selection to sessionStorage
+      sessionStorage.setItem('userProfile', selectedProfile);
+      
+      // Navigate to step 1: property information collection
+      window.location.href = 'step1-property-info.html';
+    }
+  </script>
+</body>
+</html> 

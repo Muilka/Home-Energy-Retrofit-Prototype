@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Improvement Measures Selection</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="formal.css">
+  <script src="step-progress.js"></script>
+</head>
+<body class="main-bg">
+  <div class="card">
+    <div class="step-indicator">
+    </div>
+
+    <div class="main-title">Recommended Improvement Measures and Estimated Costs</div>
+    <div class="desc">Based on your property information, we recommend the following improvement measures</div>
+    
+    <form id="improvementForm">
+      <div id="improvementsList">
+        <!-- Improvement measures will be dynamically generated via JavaScript -->
+      </div>
+      
+      <div class="selection-controls">
+        <button type="button" id="selectAllBtn" class="btn-secondary">Select All</button>
+        <button type="button" id="clearAllBtn" class="btn-secondary">Clear All</button>
+      </div>
+      
+      <div class="summary-section">
+        <div class="summary-item">
+          <strong>Total Cost: </strong>
+          <span id="totalCost">£0</span>
+        </div>
+        <div class="summary-item">
+          <strong>Total Annual Savings: </strong>
+          <span id="totalSaving">£0</span>
+        </div>
+      </div>
+      
+      <button type="submit" class="btn-main full-width">Next</button>
+    </form>
+  </div>
+
+  <script>
+    // Improvement measures data
+    const improvementsData = {
+      // Basic improvement measures
+      basic: [
+        {
+          name: 'Energy-efficient lighting',
+          description: 'Replace with LED energy-saving lamps',
+          baseCost: 20,
+          baseSaving: 27,
+          condition: () => true // Always show
+        },
+        {
+          name: 'Heating controls (room thermostats)',
+          description: 'Install smart temperature control system',
+          baseCost: 400,
+          baseSaving: 29,
+          condition: () => true
+        },
+        {
+          name: 'Solar water heating system',
+          description: 'Install solar water heater',
+          baseCost: 3000,
+          baseSaving: 27,
+          condition: (propertyInfo) => !propertyInfo.renewableEnergy || propertyInfo.renewableEnergy === 'none'
+        },
+        {
+          name: 'Solar photovoltaic panels',
+          description: 'Install rooftop solar power generation system',
+          baseCost: 2800,
+          baseSaving: 360,
+          condition: (propertyInfo) => !propertyInfo.renewableEnergy || propertyInfo.renewableEnergy === 'none'
+        }
+      ],
+      
+      // Wall insulation
+      wallInsulation: {
+        name: 'Internal or external wall insulation',
+        description: 'Add insulation layer to walls',
+        baseCost: 6000,
+        baseSaving: 100,
+        condition: (propertyInfo) => propertyInfo.wallType && !propertyInfo.wallType.includes('insulated')
+      },
+      
+      // Floor insulation
+      floorInsulation: {
+        solid: {
+          name: 'Floor insulation (solid floor)',
+          description: 'Add insulation layer to solid floor',
+          baseCost: 3000,
+          baseSaving: 40,
+          condition: (propertyInfo) => propertyInfo.floorType && propertyInfo.floorType.includes('uninsulated_solid')
+        },
+        suspended: {
+          name: 'Floor insulation (suspended floor)',
+          description: 'Add insulation layer to suspended floor',
+          baseCost: 2000,
+          baseSaving: 50,
+          condition: (propertyInfo) => propertyInfo.floorType && propertyInfo.floorType.includes('uninsulated_suspended')
+        }
+      },
+      
+      // Roof insulation
+      roofInsulation: {
+        name: 'Increase loft insulation to 270mm',
+        description: 'Increase roof insulation layer thickness',
+        baseCost: 800,
+        baseSaving: 30,
+        condition: (propertyInfo) => propertyInfo.propertyType && (propertyInfo.propertyType.includes('detached') || propertyInfo.propertyType.includes('semi_detached'))
+      },
+      
+      // Cavity wall insulation
+      cavityWallInsulation: {
+        name: 'Cavity wall insulation',
+        description: 'Inject insulation material into cavity walls',
+        baseCost: 4000,
+        baseSaving: 100,
+        condition: (propertyInfo) => propertyInfo.wallType && propertyInfo.wallType.includes('cavity')
+      },
+      
+      // Window upgrade
+      windowUpgrade: {
+        name: 'Double glazing',
+        description: 'Upgrade to double glazed windows',
+        baseCost: 3000,
+        baseSaving: 30,
+        condition: (propertyInfo) => propertyInfo.windowType && propertyInfo.windowType.includes('single')
+      },
+      
+      // Smart meter
+      smartMeter: {
+        name: 'Smart meter installation',
+        description: 'Install smart meter to monitor electricity usage in real-time and optimize usage habits',
+        baseCost: 150,
+        baseSaving: 45,
+        condition: (propertyInfo) => !propertyInfo.smartMeter || propertyInfo.smartMeter === 'no'
+      }
+    };
+
+    // Calculate area factor (using same logic as main.js)
+    function getAreaFactor(propertySize) {
+      const size = parseInt(propertySize);
+      const areaFactors = {
+        '< 50 m²': { min: 0.6, max: 0.8 },
+        '50-69 m²': { min: 0.8, max: 1.0 },
+        '70–89 m²': { min: 1.0, max: 1.2 },
+        '90–109 m²': { min: 1.2, max: 1.3 },
+        '110–149 m²': { min: 1.3, max: 1.5 },
+        '150-199 m²': { min: 1.5, max: 1.7 },
+        '≥ 200m²': { min: 1.7, max: 2.0 }
+      };
+      
+      if (size < 50) return areaFactors['< 50 m²'];
+      if (size <= 69) return areaFactors['50-69 m²'];
+      if (size <= 89) return areaFactors['70–89 m²'];
+      if (size <= 109) return areaFactors['90–109 m²'];
+      if (size <= 149) return areaFactors['110–149 m²'];
+      if (size <= 199) return areaFactors['150-199 m²'];
+      return areaFactors['≥ 200m²'];
+    }
+
+    // Generate improvement measures list
+    function generateImprovements() {
+      const propertyInfo = JSON.parse(sessionStorage.getItem('propertyInfo') || '{}');
+      const areaFactor = getAreaFactor(propertyInfo.propertySize || 100);
+      const improvementsList = document.getElementById('improvementsList');
+      
+      let allImprovements = [];
+      
+      // Add basic improvement measures
+      improvementsData.basic.forEach(item => {
+        if (item.condition(propertyInfo)) {
+          const cost = Math.round(item.baseCost * areaFactor.min);
+          const saving = Math.round(item.baseSaving * areaFactor.min);
+          
+          allImprovements.push({
+            name: item.name,
+            description: item.description,
+            cost: '£' + cost,
+            saving: '£' + saving,
+            costValue: cost,
+            savingValue: saving
+          });
+        }
+      });
+      
+      // Add wall insulation
+      if (improvementsData.wallInsulation.condition(propertyInfo)) {
+        const item = improvementsData.wallInsulation;
+        const cost = Math.round(item.baseCost * areaFactor.min);
+        const saving = Math.round(item.baseSaving * areaFactor.min);
+        
+        allImprovements.push({
+          name: item.name,
+          description: item.description,
+          cost: '£' + cost,
+          saving: '£' + saving,
+          costValue: cost,
+          savingValue: saving
+        });
+      }
+      
+      // Add floor insulation
+      if (improvementsData.floorInsulation.solid.condition(propertyInfo)) {
+        const item = improvementsData.floorInsulation.solid;
+        const cost = Math.round(item.baseCost * areaFactor.min);
+        const saving = Math.round(item.baseSaving * areaFactor.min);
+        
+        allImprovements.push({
+          name: item.name,
+          description: item.description,
+          cost: '£' + cost,
+          saving: '£' + saving,
+          costValue: cost,
+          savingValue: saving
+        });
+      }
+      
+      if (improvementsData.floorInsulation.suspended.condition(propertyInfo)) {
+        const item = improvementsData.floorInsulation.suspended;
+        const cost = Math.round(item.baseCost * areaFactor.min);
+        const saving = Math.round(item.baseSaving * areaFactor.min);
+        
+        allImprovements.push({
+          name: item.name,
+          description: item.description,
+          cost: '£' + cost,
+          saving: '£' + saving,
+          costValue: cost,
+          savingValue: saving
+        });
+      }
+      
+      // Add roof insulation
+      if (improvementsData.roofInsulation.condition(propertyInfo)) {
+        const item = improvementsData.roofInsulation;
+        const cost = Math.round(item.baseCost * areaFactor.min);
+        const saving = Math.round(item.baseSaving * areaFactor.min);
+        
+        allImprovements.push({
+          name: item.name,
+          description: item.description,
+          cost: '£' + cost,
+          saving: '£' + saving,
+          costValue: cost,
+          savingValue: saving
+        });
+      }
+      
+      // Add cavity wall insulation
+      if (improvementsData.cavityWallInsulation.condition(propertyInfo)) {
+        const item = improvementsData.cavityWallInsulation;
+        const cost = Math.round(item.baseCost * areaFactor.min);
+        const saving = Math.round(item.baseSaving * areaFactor.min);
+        
+        allImprovements.push({
+          name: item.name,
+          description: item.description,
+          cost: '£' + cost,
+          saving: '£' + saving,
+          costValue: cost,
+          savingValue: saving
+        });
+      }
+      
+      // Add window upgrade
+      if (improvementsData.windowUpgrade.condition(propertyInfo)) {
+        const item = improvementsData.windowUpgrade;
+        const cost = Math.round(item.baseCost * areaFactor.min);
+        const saving = Math.round(item.baseSaving * areaFactor.min);
+        
+        allImprovements.push({
+          name: item.name,
+          description: item.description,
+          cost: '£' + cost,
+          saving: '£' + saving,
+          costValue: cost,
+          savingValue: saving
+        });
+      }
+      
+      // Add smart meter
+      if (improvementsData.smartMeter.condition(propertyInfo)) {
+        const item = improvementsData.smartMeter;
+        const cost = Math.round(item.baseCost * areaFactor.min);
+        const saving = Math.round(item.baseSaving * areaFactor.min);
+        
+        allImprovements.push({
+          name: item.name,
+          description: item.description,
+          cost: '£' + cost,
+          saving: '£' + saving,
+          costValue: cost,
+          savingValue: saving
+        });
+      }
+      
+      // Generate HTML
+      improvementsList.innerHTML = '';
+      allImprovements.forEach((item, index) => {
+        const improvementDiv = document.createElement('div');
+        improvementDiv.className = 'improvement-item';
+        improvementDiv.innerHTML = `
+          <label class="improvement-label">
+            <input type="checkbox" name="improvements" value="${index}" data-cost="${item.costValue}" data-saving="${item.savingValue}">
+            <div class="improvement-content">
+              <div class="improvement-name">${item.name}</div>
+              <div class="improvement-desc">${item.description}</div>
+              <div class="improvement-costs">
+                <span class="cost">Improvement Cost: ${item.cost}</span>
+                <span class="saving">Annual Savings: ${item.saving}</span>
+              </div>
+            </div>
+          </label>
+        `;
+        improvementsList.appendChild(improvementDiv);
+      });
+      
+      // Save improvement measures data to localStorage
+      sessionStorage.setItem('availableImprovements', JSON.stringify(allImprovements));
+    }
+
+    // Update totals
+    function updateTotal() {
+      const selectedCheckboxes = document.querySelectorAll('input[name="improvements"]:checked');
+      let totalCost = 0;
+      let totalSaving = 0;
+      
+      selectedCheckboxes.forEach(checkbox => {
+        totalCost += parseInt(checkbox.dataset.cost || 0);
+        totalSaving += parseInt(checkbox.dataset.saving || 0);
+      });
+      
+      document.getElementById('totalCost').textContent = '£' + totalCost;
+      document.getElementById('totalSaving').textContent = '£' + totalSaving;
+    }
+
+    // Generate improvement measures when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      generateImprovements();
+      // Echo selected improvement measures and automatically calculate amounts
+      const selectedImprovements = JSON.parse(sessionStorage.getItem('selectedImprovements') || '[]');
+      if (selectedImprovements.length > 0) {
+        const availableImprovements = JSON.parse(sessionStorage.getItem('availableImprovements') || '[]');
+        selectedImprovements.forEach(sel => {
+          const idx = availableImprovements.findIndex(item => item.name === sel.name && item.costValue === sel.costValue);
+          if (idx !== -1) {
+            const checkbox = document.querySelector(`input[name="improvements"][value="${idx}"]`);
+            if (checkbox) checkbox.checked = true;
+          }
+        });
+      }
+      // Update totals after echoing
+      updateTotal();
+      // Listen for checkbox changes
+      document.addEventListener('change', function(e) {
+        if (e.target.name === 'improvements') {
+          updateTotal();
+        }
+      });
+      
+      // Select all functionality
+      document.getElementById('selectAllBtn').addEventListener('click', function() {
+        const checkboxes = document.querySelectorAll('input[name="improvements"]');
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = true;
+        });
+        updateTotal();
+      });
+      
+      // Clear all functionality
+      document.getElementById('clearAllBtn').addEventListener('click', function() {
+        const checkboxes = document.querySelectorAll('input[name="improvements"]');
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = false;
+        });
+        updateTotal();
+      });
+    });
+
+    // Form submission
+    document.getElementById('improvementForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Get selected improvement measures
+      const selectedImprovements = [];
+      const availableImprovements = JSON.parse(sessionStorage.getItem('availableImprovements') || '[]');
+      
+      document.querySelectorAll('input[name="improvements"]:checked').forEach(checkbox => {
+        const index = parseInt(checkbox.value);
+        if (availableImprovements[index]) {
+          selectedImprovements.push(availableImprovements[index]);
+        }
+      });
+      
+      if (selectedImprovements.length === 0) {
+        alert('Please select at least one improvement measure');
+        return;
+      }
+      
+      // Save selected improvement measures
+      sessionStorage.setItem('selectedImprovements', JSON.stringify(selectedImprovements));
+      
+      // Determine next step based on user profile
+      const userProfile = sessionStorage.getItem('userProfile');
+      
+      switch(userProfile) {
+        case 'A':
+          window.location.href = 'contractor-selection.html';
+          break;
+        case 'B':
+          window.location.href = 'bank-info.html';
+          break;
+        case 'C':
+          window.location.href = 'welfare-info.html';
+          break;
+        case 'D':
+          window.location.href = 'welfare-info.html';
+          break;
+        default:
+          alert('User profile information lost, please reselect');
+          window.location.href = 'user-profile.html';
+      }
+    });
+  </script>
+
+
+</body>
+</html> 

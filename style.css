@@ -1,0 +1,618 @@
+/* interface.html 专用样式文件 */
+
+/* ===== 更多政策提示样式 ===== */
+.more-policies-hint {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); /* 渐变背景 */
+  border: 2px dashed #cbd5e1;                                       /* 虚线边框 */
+  border-radius: 1rem;                                               /* 圆角 */
+  padding: 1.5rem;                                                   /* 内边距 */
+  margin: 1.5rem 0;                                                  /* 外边距 */
+  position: relative;                                                 /* 相对定位 */
+  overflow: hidden;                                                   /* 隐藏溢出内容 */
+}
+
+.more-policies-hint::before {
+  content: '';                                                        /* 伪元素内容 */
+  position: absolute;                                                 /* 绝对定位 */
+  top: 0;                                                            /* 顶部对齐 */
+  left: -100%;                                                       /* 初始位置在左侧外 */
+  width: 100%;                                                       /* 宽度100% */
+  height: 100%;                                                      /* 高度100% */
+  background: linear-gradient(90deg, transparent, rgba(13, 148, 136, 0.1), transparent); /* 扫光效果 */
+  animation: shimmer 3s ease-in-out infinite;                        /* 持续扫光动画 */
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
+}
+
+.more-policies-hint-content {
+  display: flex;                                                      /* 弹性布局 */
+  align-items: center;                                                /* 垂直居中对齐 */
+  gap: 1rem;                                                         /* 元素间距 */
+  position: relative;                                                 /* 相对定位，确保在扫光效果之上 */
+  z-index: 1;                                                        /* 层级 */
+}
+
+.more-policies-hint-icon {
+  font-size: 2rem;                                                    /* 省略号图标大小 */
+  color: #64748b;                                                     /* 图标颜色 */
+  font-weight: bold;                                                  /* 图标粗细 */
+  line-height: 1;                                                     /* 行高 */
+  opacity: 0.7;                                                       /* 透明度 */
+}
+
+.more-policies-hint-text {
+  display: flex;                                                      /* 弹性布局 */
+  flex-direction: column;                                             /* 垂直排列 */
+  gap: 0.25rem;                                                      /* 文字间距 */
+}
+
+.more-policies-hint-title {
+  font-size: 1rem;                                                    /* 标题字体大小 */
+  font-weight: 600;                                                   /* 标题字体粗细 */
+  color: #334155;                                                     /* 标题颜色 */
+}
+
+.more-policies-hint-subtitle {
+  font-size: 0.85rem;                                                 /* 副标题字体大小 */
+  color: #64748b;                                                     /* 副标题颜色 */
+  font-style: italic;                                                 /* 斜体样式 */
+}
+
+/* ===== 政策部分样式 ===== */
+.policy-section {
+  background-color: #f8fafc;              /* 浅色背景 */
+  border: 1px solid #e2e8f0;             /* 边框 */
+  border-radius: 0.75rem;                 /* 圆角 */
+  padding: 1rem;                          /* 内边距 */
+  margin-bottom: 1rem;                    /* 底部外边距 */
+  transition: all 0.2s ease;              /* 过渡动画 */
+}
+
+.policy-section:hover {
+  background-color: #f1f5f9;              /* 悬停时背景色变化 */
+  border-color: #cbd5e1;                  /* 悬停时边框色变化 */
+  transform: translateY(-2px);            /* 悬停时轻微上移 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 悬停时添加阴影 */
+}
+
+.policy-section h3 {
+  font-size: 1rem;                        /* 标题字体大小 */
+  font-weight: 600;                       /* 标题字体粗细 */
+  color: #0d9488;                         /* 标题颜色 */
+  margin-bottom: 0.5rem;                  /* 标题底部外边距 */
+  line-height: 1.3;                       /* 标题行高 */
+}
+
+.policy-section p {
+  font-size: 0.9rem;                      /* 正文字体大小 */
+  color: #64748b;                         /* 正文颜色 */
+  line-height: 1.5;                       /* 正文行高 */
+  margin: 0;                              /* 移除默认外边距 */
+}
+
+/* ===== 问题解释文字样式 ===== */
+.question-explanation {
+  color: #64748b;               /* 使用较浅的灰色，与主标题形成对比 */
+  font-size: 0.95rem;           /* 字体大小稍小于主标签 */
+  line-height: 1.5;             /* 行高为1.5倍，提高可读性 */
+  margin-bottom: 1.5rem;        /* 底部外边距，与选项列表保持距离 */
+  font-style: italic;           /* 斜体样式，突出说明性质 */
+  padding: 0.5rem 0;            /* 上下内边距，增加视觉空间 */
+  border-left: 3px solid #e2e8f0; /* 左侧边框，增加视觉层次 */
+  padding-left: 1rem;           /* 左侧内边距，为边框留出空间 */
+  background-color: #f8fafc;    /* 浅色背景，突出说明区域 */
+  border-radius: 0.5rem;        /* 圆角边框，与整体设计保持一致 */
+  padding: 0.75rem 1rem;        /* 调整内边距，确保内容不贴边 */
+}
+
+/* ===== 基础样式 ===== */
+* {
+  margin: 0;                    /* 移除所有元素的外边距，确保页面从边缘开始 */
+  padding: 0;                   /* 移除所有元素的内边距，避免默认间距 */
+  box-sizing: border-box;       /* 设置盒模型为border-box，使padding和border包含在元素总宽高中 */
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; /* 设置字体族，优先使用系统字体，提供更好的本地化体验 */
+  line-height: 1.6;             /* 设置行高为1.6倍字体大小，提高文本可读性 */
+  color: #334155;               /* 设置默认文字颜色为深灰色，提供良好的对比度 */
+}
+
+/* ===== 主体背景 ===== */
+.main-bg {
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); /* 设置渐变背景，从浅灰到深灰，营造现代感 */
+  min-height: 100vh;             /* 最小高度为视口高度，确保背景覆盖整个屏幕 */
+  min-width: 100vw;              /* 最小宽度为视口宽度，确保背景覆盖整个屏幕 */
+  display: flex;                 /* 使用弹性布局，便于内容居中 */
+  align-items: center;           /* 垂直居中对齐子元素 */
+  justify-content: center;       /* 水平居中对齐子元素 */
+  padding: 1rem;                 /* 设置内边距为1rem，避免内容贴边 */
+}
+
+/* ===== 卡片容器 ===== */
+.card {
+  background: #fff;              /* 白色背景，与渐变背景形成对比 */
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); /* 添加阴影效果，x偏移0，y偏移10px，模糊40px，透明度0.1，营造悬浮感 */
+  border-radius: 1.5rem;         /* 设置圆角为1.5rem，使卡片更现代化 */
+  padding: 2.5rem;               /* 设置内边距为2.5rem，为内容提供充足空间 */
+  width: 90vw;                   /* 宽度为视口宽度的90%，响应式设计 */
+  height: 90vh;                  /* 高度为视口高度的90%，响应式设计 */
+  max-width: 1400px;             /* 最大宽度限制为1400px，避免在大屏幕上过宽 */
+  max-height: 900px;             /* 最大高度限制为900px，避免在大屏幕上过高 */
+  display: flex;                 /* 使用弹性布局，便于内容排列 */
+  flex-direction: column;        /* 垂直排列子元素 */
+  justify-content: flex-start;   /* 子元素从顶部开始排列 */
+  overflow-y: auto;              /* 垂直方向内容溢出时显示滚动条 */
+  position: relative;            /* 设置相对定位，为子元素定位提供参考 */
+}
+
+/* ===== 标题样式 ===== */
+.main-title {
+  font-size: 2.2rem;             /* 字体大小为2.2rem，突出标题重要性 */
+  font-weight: 700;              /* 字体粗细为700（粗体），增强视觉层次 */
+  color: #0d9488;                /* 字体颜色为青色，与整体主题保持一致 */
+  margin-bottom: 2rem;           /* 底部外边距为2rem，与下方内容保持距离 */
+  text-align: left;              /* 文字左对齐，符合阅读习惯 */
+  letter-spacing: -0.025em;      /* 字母间距为负值，让字母更紧凑，提高可读性 */
+}
+
+/* ===== 步骤指示器容器 ===== */
+.step-indicator {
+  display: flex;                 /* 使用弹性布局，水平排列步骤 */
+  align-items: center;           /* 垂直居中对齐步骤项 */
+  justify-content: space-between; /* 步骤项之间平均分布 */
+  width: 100%;                   /* 宽度占满父容器 */
+  margin: 0 auto;                /* 水平居中 */
+  position: relative;            /* 相对定位，为子元素定位提供参考 */
+}
+
+/* ===== 步骤项 ===== */
+.step-indicator-item {
+  display: flex;                 /* 使用弹性布局 */
+  align-items: center;           /* 垂直居中对齐 */
+  position: relative;            /* 相对定位 */
+  flex: 1;                       /* 弹性增长，平均分配空间 */
+  min-width: 0;                  /* 最小宽度为0，允许收缩 */
+  z-index: 2;                    /* 层级为2，确保在进度条之上 */
+}
+
+/* ===== 步骤圆点样式 ===== */
+.step-circle,
+.step-circle-active {
+  width: 3.2rem;                 /* 圆点宽度为3.2rem */
+  height: 3.2rem;                /* 圆点高度为3.2rem，保持正方形 */
+  border-radius: 50%;            /* 设置为圆形 */
+  display: flex;                 /* 使用弹性布局，便于内容居中 */
+  align-items: center;           /* 垂直居中对齐数字 */
+  justify-content: center;       /* 水平居中对齐数字 */
+  font-size: 1.2rem;             /* 数字字体大小为1.2rem */
+  font-weight: 700;              /* 数字字体粗细为700（粗体） */
+  background: #e5e7eb;           /* 默认背景色为浅灰色 */
+  color: #64748b;                /* 默认文字颜色为灰色 */
+  border: 2px solid transparent; /* 透明边框，为激活状态预留空间 */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* 所有属性过渡动画，使用缓动函数 */
+  z-index: 2;                    /* 层级为2，确保在进度条之上 */
+  position: relative;            /* 相对定位，为发光效果提供参考 */
+}
+
+.step-circle-active {
+  background: #14b8a6;           /* 激活状态背景色为青色 */
+  color: #fff;                   /* 激活状态文字颜色为白色 */
+  border-color: #14b8a6;         /* 激活状态边框颜色为青色 */
+  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.2), 0 0 0 8px rgba(20, 184, 166, 0.1); /* 双层发光阴影效果 */
+  animation: pulseGlow 2s ease-in-out infinite; /* 脉冲发光动画，每2秒循环一次 */
+}
+
+/* ===== 进度条样式 ===== */
+.step-bar {
+  flex: 1;                       /* 弹性增长，占据剩余空间 */
+  height: 0.5rem;                /* 进度条高度为0.5rem */
+  background: #e5e7eb;           /* 进度条背景色为浅灰色 */
+  margin: 0 0.5rem;              /* 左右外边距为0.5rem，与圆点保持距离 */
+  border-radius: 0.25rem;        /* 圆角为0.25rem，与高度的一半相同 */
+  z-index: 1;                    /* 层级为1，在圆点下方 */
+  display: flex;                 /* 使用弹性布局，便于进度条内容 */
+  align-items: center;           /* 垂直居中对齐 */
+  overflow: hidden;              /* 隐藏溢出内容 */
+  position: relative;            /* 相对定位 */
+  min-width: 40px;               /* 最小宽度为40px，确保可见性 */
+}
+
+.step-bar-progress {
+  height: 100%;                  /* 高度占满父容器 */
+  border-radius: 0.25rem;        /* 圆角与父容器相同 */
+  background: linear-gradient(90deg, #14b8a6, #10b981); /* 青色到绿色的渐变背景 */
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* 宽度过渡动画，使用缓动函数 */
+}
+
+/* 最后一个步骤不显示进度条 */
+.step-indicator-item:last-child .step-bar {
+  display: none;                 /* 隐藏最后一个步骤的进度条 */
+}
+
+/* ===== 首页样式 ===== */
+.home-landing {
+  display: flex;                  /* 使用弹性布局 */
+  flex-direction: column;         /* 垂直排列子元素 */
+  align-items: center;            /* 水平居中对齐子元素 */
+  justify-content: center;        /* 垂直居中对齐子元素 */
+  height: 100%;                   /* 高度占满父容器 */
+  width: 100%;                    /* 宽度占满父容器 */
+  text-align: center;             /* 文字居中对齐 */
+}
+
+.home-title {
+  font-size: clamp(2.5rem, 8vw, 4.5rem); /* 响应式字体大小，最小2.5rem，最大4.5rem，根据视口宽度调整 */
+  font-weight: 800;               /* 字体粗细为800（超粗体），突出重要性 */
+  color: #0d9488;                 /* 字体颜色为青色 */
+  margin-bottom: 3rem;            /* 底部外边距为3rem，与按钮保持距离 */
+  line-height: 1.2;               /* 行高为1.2倍字体大小，紧凑排列 */
+  letter-spacing: -0.02em;        /* 字母间距为负值，让字母更紧凑 */
+  background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%); /* 渐变背景 */
+  -webkit-background-clip: text;  /* Webkit浏览器文字裁剪，显示渐变背景 */
+  -webkit-text-fill-color: transparent; /* Webkit浏览器文字透明，显示渐变背景 */
+  background-clip: text;          /* 文字裁剪，显示渐变背景 */
+}
+
+.home-btn {
+  margin-top: 3rem;               /* 顶部外边距为3rem，与标题保持距离 */
+  padding: 1.2rem 3rem;           /* 内边距：上下1.2rem，左右3rem */
+  font-size: clamp(1.3rem, 4vw, 2.2rem); /* 响应式字体大小，根据视口宽度调整 */
+  border-radius: 1rem;            /* 圆角为1rem */
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); /* 青色渐变背景 */
+  color: #fff;                    /* 文字颜色为白色 */
+  border: none;                   /* 无边框 */
+  font-weight: 600;               /* 字体粗细为600（半粗体） */
+  cursor: pointer;                /* 鼠标指针为手型，表示可点击 */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* 所有属性过渡动画 */
+  box-shadow: 0 10px 30px rgba(20, 184, 166, 0.3); /* 阴影效果，增强立体感 */
+  text-decoration: none;          /* 无下划线 */
+  display: inline-block;          /* 行内块级元素，便于设置宽高 */
+}
+
+.home-btn:hover {
+  transform: translateY(-3px);    /* 悬停时向上移动3px，营造悬浮效果 */
+  box-shadow: 0 15px 40px rgba(20, 184, 166, 0.4); /* 悬停时增强阴影 */
+}
+
+.home-btn:active {
+  transform: translateY(-1px);    /* 点击时向上移动1px，提供点击反馈 */
+}
+
+/* ===== 问题中心样式 ===== */
+.question-center {
+  display: flex;                  /* 使用弹性布局 */
+  flex-direction: column;         /* 垂直排列子元素 */
+  align-items: flex-start;        /* 子元素左对齐 */
+  justify-content: flex-start;    /* 子元素从顶部开始排列 */
+  min-height: 60vh;               /* 最小高度为视口高度的60% */
+  width: 100%;                    /* 宽度占满父容器 */
+  max-width: 800px;               /* 最大宽度限制为800px，避免过宽 */
+  margin: 0;                      /* 移除水平居中，改为左对齐 */
+  margin-top: 2rem;               /* 增加顶部间距，与步骤圆点保持距离 */
+}
+
+/* ===== 表单标签样式 ===== */
+.form-label {
+  display: block;                 /* 块级元素，独占一行 */
+  margin-bottom: 1.5rem;          /* 增加底部外边距为1.5rem，与选项保持更好距离 */
+  font-weight: 600;               /* 字体粗细为600（半粗体） */
+  color: #1e293b;                 /* 文字颜色为深色 */
+  text-align: left;               /* 文字左对齐 */
+  font-size: 1.3rem;              /* 字体大小为1.3rem */
+  line-height: 1.4;               /* 行高为1.4倍字体大小 */
+}
+
+/* ===== 选项列表样式 ===== */
+.option-list {
+  display: flex;                  /* 使用弹性布局 */
+  flex-direction: column;         /* 垂直排列选项 */
+  gap: 1.5rem;                    /* 选项间距为1.5rem */
+  margin: 2.5rem 0;               /* 上下外边距为2.5rem */
+  width: 100%;                    /* 宽度占满父容器 */
+  max-width: 700px;               /* 最大宽度限制为700px */
+  margin-left: 0;                 /* 确保左对齐 */
+  margin-right: auto;             /* 右侧自动边距 */
+}
+
+.option-list.two-cols {
+  display: grid;                  /* 使用网格布局 */
+  grid-template-columns: 1fr 1fr; /* 两列等宽布局 */
+  gap: 1.5rem;                    /* 网格间距为1.5rem */
+}
+
+.option-list label {
+  display: flex;                  /* 使用弹性布局 */
+  align-items: flex-start;        /* 子元素顶部对齐 */
+  font-size: 1.1rem;              /* 字体大小为1.1rem */
+  background: #f8fafc;            /* 背景色为浅灰色 */
+  border-radius: 1rem;            /* 圆角为1rem */
+  padding: 1.2rem 1.5rem;         /* 内边距：上下1.2rem，左右1.5rem */
+  cursor: pointer;                /* 鼠标指针为手型，表示可点击 */
+  border: 2px solid #e5e7eb;      /* 边框：2px实线，浅灰色 */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* 所有属性过渡动画 */
+  min-width: 0;                   /* 最小宽度为0，允许收缩 */
+  width: 100%;                    /* 宽度占满父容器 */
+  box-sizing: border-box;         /* 盒模型为border-box */
+  word-break: break-word;         /* 长单词换行 */
+  justify-content: flex-start;    /* 子元素左对齐 */
+  align-items: flex-start;        /* 子元素顶部对齐 */
+  text-align: left;               /* 文字左对齐 */
+  position: relative;             /* 相对定位，为伪元素提供参考 */
+  overflow: hidden;               /* 隐藏溢出内容 */
+}
+
+.option-list label::before {
+  content: '';                    /* 伪元素内容为空 */
+  position: absolute;             /* 绝对定位 */
+  top: 0;                         /* 距离顶部0 */
+  left: 0;                        /* 距离左侧0 */
+  right: 0;                       /* 距离右侧0 */
+  bottom: 0;                      /* 距离底部0 */
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); /* 渐变背景 */
+  opacity: 0;                     /* 初始透明度为0，不可见 */
+  transition: opacity 0.3s ease;  /* 透明度过渡动画 */
+  z-index: 0;                     /* 层级为0，在内容下方 */
+}
+
+.option-list label:hover {
+  border-color: #14b8a6;          /* 悬停时边框颜色变为青色 */
+  background: #e0f2fe;            /* 悬停时背景色变为浅青色 */
+  transform: translateY(-2px);    /* 悬停时向上移动2px */
+  box-shadow: 0 8px 25px rgba(20, 184, 166, 0.15); /* 悬停时添加阴影 */
+}
+
+.option-list input[type="radio"] {
+  margin-right: 1.2rem;           /* 右边距为1.2rem，与文字保持距离 */
+  margin-top: 0.2rem;             /* 顶部外边距为0.2rem，微调位置 */
+  cursor: pointer;                /* 鼠标指针为手型 */
+  z-index: 1;                     /* 层级为1，在伪元素上方 */
+  position: relative;             /* 相对定位 */
+}
+
+.option-list input[type="radio"]:checked + span {
+  color: #14b8a6;                 /* 选中状态文字颜色为青色 */
+  font-weight: 600;               /* 选中状态字体粗细为600 */
+}
+
+.option-list label:hover span,
+.option-list input[type="radio"]:focus + span {
+  color: #14b8a6;                 /* 悬停和聚焦状态文字颜色为青色 */
+}
+
+/* ===== 按钮样式 ===== */
+.btn-main {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); /* 青色渐变背景 */
+  color: #fff;                    /* 文字颜色为白色 */
+  padding: 1rem 2rem;             /* 内边距：上下1rem，左右2rem */
+  border: none;                   /* 无边框 */
+  border-radius: 1rem;            /* 圆角为1rem */
+  font-size: 1.1rem;              /* 字体大小为1.1rem */
+  font-weight: 600;               /* 字体粗细为600（半粗体） */
+  cursor: pointer;                /* 鼠标指针为手型 */
+  margin-top: 1rem;               /* 顶部外边距为1rem */
+  margin-bottom: 1rem;            /* 底部外边距为1rem */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* 所有属性过渡动画 */
+  text-decoration: none;          /* 无下划线 */
+  display: inline-block;          /* 行内块级元素 */
+  text-align: center;             /* 文字居中对齐 */
+  box-shadow: 0 6px 20px rgba(20, 184, 166, 0.25); /* 阴影效果 */
+  position: relative;             /* 相对定位，为伪元素提供参考 */
+  overflow: hidden;               /* 隐藏溢出内容 */
+}
+
+.btn-main::before {
+  content: '';                    /* 伪元素内容为空 */
+  position: absolute;             /* 绝对定位 */
+  top: 0;                         /* 距离顶部0 */
+  left: -100%;                    /* 初始位置在左侧外部 */
+  width: 100%;                    /* 宽度100% */
+  height: 100%;                   /* 高度100% */
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent); /* 光泽效果渐变 */
+  transition: left 0.5s;          /* 左侧位置过渡动画，持续0.5秒 */
+}
+
+.btn-main:hover {
+  transform: translateY(-2px);    /* 悬停时向上移动2px */
+  box-shadow: 0 10px 30px rgba(20, 184, 166, 0.35); /* 悬停时增强阴影 */
+}
+
+.btn-main:hover::before {
+  left: 100%;                     /* 悬停时光泽效果移动到右侧 */
+}
+
+.btn-main:active {
+  transform: translateY(0);       /* 点击时回到原位置 */
+}
+
+.btn-main:disabled {
+  background: #cbd5e1;            /* 禁用状态背景色为灰色 */
+  cursor: not-allowed;            /* 禁用状态鼠标指针为禁止 */
+  transform: none;                /* 禁用状态无变换效果 */
+  box-shadow: none;               /* 禁用状态无阴影 */
+}
+
+.btn-secondary {
+  background: #f1f5f9;            /* 背景色为浅灰色 */
+  color: #475569;                 /* 文字颜色为深灰色 */
+  padding: 1rem 2rem;             /* 内边距：上下1rem，左右2rem */
+  border: 2px solid #e2e8f0;      /* 边框：2px实线，浅灰色 */
+  border-radius: 1rem;            /* 圆角为1rem */
+  font-size: 1.1rem;              /* 字体大小为1.1rem */
+  font-weight: 600;               /* 字体粗细为600（半粗体） */
+  cursor: pointer;                /* 鼠标指针为手型 */
+  margin-top: 1rem;               /* 顶部外边距为1rem */
+  margin-bottom: 1rem;            /* 底部外边距为1rem */
+  margin-right: 1rem;             /* 右边距为1rem，与主按钮保持距离 */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* 所有属性过渡动画 */
+}
+
+.btn-secondary:hover {
+  background: #e2e8f0;            /* 悬停时背景色变深 */
+  border-color: #cbd5e1;          /* 悬停时边框颜色变深 */
+  transform: translateY(-2px);    /* 悬停时向上移动2px */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* 悬停时添加阴影 */
+}
+
+.btn-secondary:active {
+  transform: translateY(0);       /* 点击时回到原位置 */
+}
+
+.btn-disabled {
+  opacity: 0.5;                   /* 透明度为0.5，表示禁用状态 */
+  cursor: not-allowed;            /* 鼠标指针为禁止 */
+  pointer-events: none;           /* 禁用鼠标事件 */
+}
+
+/* ===== 按钮布局 ===== */
+.flex-row-btns {
+  display: flex;                  /* 使用弹性布局 */
+  justify-content: flex-start;    /* 子元素左对齐 */
+  align-items: center;            /* 子元素垂直居中对齐 */
+  gap: 1.5rem;                    /* 子元素间距为1.5rem */
+  margin-top: 3rem;               /* 顶部外边距为3rem */
+  flex-wrap: wrap;                /* 允许换行，适应小屏幕 */
+}
+
+/* ===== 全宽样式 ===== */
+.full-width {
+  width: 100%;                    /* 宽度占满父容器 */
+}
+
+
+
+/* ===== 响应式设计 ===== */
+@media (max-width: 768px) {       /* 平板和手机端样式 */
+  .card {
+    width: 95vw;                  /* 宽度为视口宽度的95%，适应小屏幕 */
+    height: 95vh;                 /* 高度为视口高度的95%，适应小屏幕 */
+    padding: 1.5rem;              /* 内边距减小为1.5rem，节省空间 */
+    border-radius: 1rem;          /* 圆角减小为1rem */
+  }
+  
+  .main-title {
+    font-size: 1.8rem;            /* 标题字体大小减小为1.8rem */
+    margin-bottom: 1.5rem;        /* 底部外边距减小为1.5rem */
+  }
+  
+  .question-center {
+    margin-top: 1.5rem;           /* 小屏幕下减少顶部间距 */
+  }
+
+  .step-circle {
+    width: 3rem;                  /* 圆点宽度减小为3rem */
+    height: 3rem;                 /* 圆点高度减小为3rem */
+    font-size: 1.2rem;            /* 数字字体大小减小为1.2rem */
+  }
+  
+  .step-bar,
+  .step-bar-progress {
+    top: 1.5rem;                  /* 进度条垂直位置调整 */
+    width: calc(100% - 3rem);     /* 进度条宽度调整（为更小的圆点留空间） */
+    height: 0.6rem;               /* 进度条高度减小为0.6rem */
+  }
+  
+  .option-list.two-cols {
+    grid-template-columns: 1fr;   /* 两列布局改为单列，适应小屏幕 */
+}
+
+  .option-list label {
+    padding: 1rem 1.2rem;         /* 选项内边距调整 */
+    font-size: 1rem;              /* 选项字体大小减小 */
+}
+
+  .form-label {
+    font-size: 1.1rem;            /* 表单标签字体大小调整 */
+    margin-bottom: 1.2rem;        /* 小屏幕下调整底部间距 */
+  }
+  
+  .btn-main,
+  .btn-secondary {
+    padding: 0.8rem 1.5rem;       /* 按钮内边距调整 */
+    font-size: 1rem;              /* 按钮字体大小减小 */
+  }
+  
+  .flex-row-btns {
+    flex-direction: column;       /* 按钮行改为垂直排列 */
+    align-items: stretch;         /* 按钮拉伸对齐 */
+}
+
+  .flex-row-btns .btn-secondary {
+    margin-right: 0;              /* 移除次要按钮的右边距 */
+}
+}
+
+@media (max-width: 480px) {       /* 小屏手机端样式 */
+  .main-bg {
+    padding: 0.5rem;              /* 背景内边距减小为0.5rem */
+  }
+  
+  .card {
+    width: 100vw;                 /* 宽度占满视口 */
+    height: 100vh;                /* 高度占满视口 */
+    border-radius: 0;             /* 移除圆角，全屏显示 */
+    padding: 1rem;                /* 内边距减小为1rem */
+  }
+  
+  .question-center {
+    margin-top: 1rem;             /* 超小屏幕下进一步减少顶部间距 */
+  }
+  
+  .home-title {
+    font-size: 2rem;              /* 首页标题字体大小调整 */
+    margin-bottom: 2rem;          /* 底部外边距调整 */
+  }
+  
+  .home-btn {
+    padding: 1rem 2rem;           /* 首页按钮内边距调整 */
+    font-size: 1.1rem;            /* 首页按钮字体大小调整 */
+  }
+}
+
+/* ===== 动画效果 ===== */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.2), 0 0 0 8px rgba(20, 184, 166, 0.1); /* 初始和结束状态：双层发光阴影 */
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(20, 184, 166, 0.3), 0 0 0 16px rgba(20, 184, 166, 0.15); /* 中间状态：增强发光效果 */
+  }
+}
+
+.question-center > div {
+  animation: fadeIn 0.6s ease-out; /* 问题中心内容淡入动画，持续0.6秒 */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;                   /* 初始透明度为0，完全透明 */
+    transform: translateY(20px);  /* 初始位置向下偏移20px */
+  }
+  to {
+    opacity: 1;                   /* 最终透明度为1，完全不透明 */
+    transform: translateY(0);     /* 最终位置回到原位置 */
+  }
+}
+
+/* ===== 滚动条样式 ===== */
+.card::-webkit-scrollbar {
+  width: 8px;                     /* 滚动条宽度为8px */
+}
+
+.card::-webkit-scrollbar-track {
+  background: #f1f5f9;            /* 滚动条轨道背景色为浅灰色 */
+  border-radius: 4px;             /* 滚动条轨道圆角为4px */
+}
+
+.card::-webkit-scrollbar-thumb {
+  background: #cbd5e1;            /* 滚动条滑块背景色为灰色 */
+  border-radius: 4px;             /* 滚动条滑块圆角为4px */
+}
+
+.card::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;            /* 滚动条滑块悬停时背景色变深 */
+} 

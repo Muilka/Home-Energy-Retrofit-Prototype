@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Benefit Plan Selection</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="formal.css">
+  <script src="step-progress.js"></script>
+</head>
+<body class="main-bg">
+  <div class="card">
+    <div class="step-indicator" id="stepIndicator">
+    </div>
+
+    <div class="main-title">Select Government Benefit Plans</div>
+    <div class="desc">Based on the information you provided, here are the UK government energy subsidy benefit plans you may be eligible for</div>
+    
+    <form id="welfareSelectionForm">
+      <div id="welfareOptions" class="option-list">
+      </div>
+      
+      <div class="selection-controls">
+        <button type="button" id="selectAllBtn" class="btn-secondary">Select All</button>
+        <button type="button" id="clearAllBtn" class="btn-secondary">Clear All</button>
+      </div>
+      
+      <div class="summary-section">
+        <div class="summary-item">
+          <strong>Total Benefits:</strong>
+          <span id="totalWelfare">£0</span>
+        </div>
+      </div>
+      
+      <button type="submit" class="btn-main full-width">Next Step</button>
+    </form>
+  </div>
+
+  <script>
+    // UK Energy Subsidy Benefit Plan Data
+    const ukEnergySchemes = {
+      // Energy Price Guarantee
+      energy_price_guarantee: {
+        name: 'Energy Price Guarantee',
+        description: 'Limits the maximum price of household energy bills, applicable to all households',
+        maxAmount: 2500,
+        eligibility: (userInfo) => true, // All households are eligible
+        priority: 1
+      },
+      
+      // Warm Home Discount
+      warm_home_discount: {
+        name: 'Warm Home Discount',
+        description: 'Provides £150 energy bill discount for low-income households',
+        maxAmount: 150,
+        eligibility: (userInfo) => {
+          const qualifyingBenefits = ['pension_credit', 'universal_credit', 'income_support', 'jobseekers_allowance', 'employment_support'];
+          return userInfo.benefitsReceived.some(benefit => qualifyingBenefits.includes(benefit));
+        },
+        priority: 2
+      },
+      
+      // Cold Weather Payment
+      cold_weather_payment: {
+        name: 'Cold Weather Payment',
+        description: 'Provides additional support during cold weather periods',
+        maxAmount: 25,
+        eligibility: (userInfo) => {
+          const qualifyingBenefits = ['pension_credit', 'universal_credit', 'income_support', 'jobseekers_allowance', 'employment_support'];
+          return userInfo.benefitsReceived.some(benefit => qualifyingBenefits.includes(benefit));
+        },
+        priority: 3
+      },
+      
+      // Energy Bills Support Scheme
+      energy_bills_support: {
+        name: 'Energy Bills Support Scheme',
+        description: 'Provides £400 energy bill support for all households',
+        maxAmount: 400,
+        eligibility: (userInfo) => true, // All households are eligible
+        priority: 4
+      },
+      
+      // Energy Efficiency Improvements Grant
+      energy_efficiency_grant: {
+        name: 'Energy Efficiency Improvements Grant',
+        description: 'Provides energy efficiency improvement grants for low-income households, including insulation, new boilers, etc.',
+        maxAmount: 10000,
+        eligibility: (userInfo) => {
+          const qualifyingBenefits = ['pension_credit', 'universal_credit', 'income_support'];
+          const lowIncome = parseInt(userInfo.householdIncome) < 31000;
+          return userInfo.benefitsReceived.some(benefit => qualifyingBenefits.includes(benefit)) || lowIncome;
+        },
+        priority: 5
+      },
+      
+      // Solar Panel Grant
+      solar_panel_grant: {
+        name: 'Solar Panel Installation Grant',
+        description: 'Provides solar panel installation grants for eligible households',
+        maxAmount: 5000,
+        eligibility: (userInfo) => {
+          const qualifyingBenefits = ['pension_credit', 'universal_credit', 'income_support'];
+          const lowIncome = parseInt(userInfo.householdIncome) < 31000;
+          const poorEPC = ['E', 'F', 'G'].includes(userInfo.epcRating);
+          return (userInfo.benefitsReceived.some(benefit => qualifyingBenefits.includes(benefit)) || lowIncome) && poorEPC;
+        },
+        priority: 6
+      },
+      
+      // Boiler Upgrade Scheme
+      boiler_upgrade: {
+        name: 'Boiler Upgrade Scheme',
+        description: 'Provides grants for installing heat pumps or biomass boilers',
+        maxAmount: 6000,
+        eligibility: (userInfo) => {
+          return userInfo.tenureType === 'owner_occupied';
+        },
+        priority: 7
+      },
+      
+      // Green Homes Grant
+      green_homes_grant: {
+        name: 'Green Homes Grant',
+        description: 'Provides grants for energy efficiency improvements, including insulation, doors and windows, etc.',
+        maxAmount: 10000,
+        eligibility: (userInfo) => {
+          const qualifyingBenefits = ['pension_credit', 'universal_credit', 'income_support'];
+          return userInfo.benefitsReceived.some(benefit => qualifyingBenefits.includes(benefit));
+        },
+        priority: 8
+      },
+      
+      // Energy Vulnerability Support
+      energy_vulnerability_support: {
+        name: 'Energy Vulnerability Support',
+        description: 'Provides additional support for energy vulnerable groups',
+        maxAmount: 3000,
+        eligibility: (userInfo) => {
+          return userInfo.energyVulnerable && userInfo.energyVulnerable.some(v => v !== 'none');
+        },
+        priority: 9
+      },
+      
+      // Veteran Energy Support
+      veteran_energy_support: {
+        name: 'Veteran Energy Support',
+        description: 'Provides specialized energy support for veterans',
+        maxAmount: 2000,
+        eligibility: (userInfo) => {
+          return userInfo.veteranStatus === 'yes';
+        },
+        priority: 10
+      },
+      
+      // Disability Energy Support
+      disability_energy_support: {
+        name: 'Disability Energy Support',
+        description: 'Provides energy support for people with disabilities, including medical device power supply subsidies',
+        maxAmount: 4000,
+        eligibility: (userInfo) => {
+          return userInfo.disabilityStatus === 'yes';
+        },
+        priority: 11
+      }
+    };
+
+    // Generate eligible benefit options when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      generateWelfareOptions();
+      
+      // Restore previously selected benefits
+      const welfareSelection = JSON.parse(sessionStorage.getItem('welfareSelection') || '{}');
+      if (welfareSelection.selectedWelfare) {
+        document.querySelectorAll('input[name="welfareOption"]').forEach(cb => {
+          cb.checked = welfareSelection.selectedWelfare.includes(cb.value);
+        });
+        updateWelfareTotal();
+      }
+      
+      // Bind events
+      document.addEventListener('change', function(e) {
+        if (e.target.name === 'welfareOption') {
+          updateWelfareTotal();
+        }
+      });
+      
+      // Select All button
+      document.getElementById('selectAllBtn').addEventListener('click', function() {
+        const checkboxes = document.querySelectorAll('input[name="welfareOption"]');
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = true;
+        });
+        updateWelfareTotal();
+      });
+      
+      // Clear All button
+      document.getElementById('clearAllBtn').addEventListener('click', function() {
+        const checkboxes = document.querySelectorAll('input[name="welfareOption"]');
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = false;
+        });
+        updateWelfareTotal();
+      });
+    });
+
+    // Generate eligible benefit options
+    function generateWelfareOptions() {
+      const userInfo = JSON.parse(sessionStorage.getItem('welfareInfo') || '{}');
+      const propertyInfo = JSON.parse(sessionStorage.getItem('propertyInfo') || '{}');
+      const welfareOptionsContainer = document.getElementById('welfareOptions');
+      
+      if (!userInfo.age) {
+        welfareOptionsContainer.innerHTML = '<p style="color: #dc2626;">Please complete the benefit eligibility information collection first</p>';
+        return;
+      }
+      
+      // Merge user information and property information
+      const combinedInfo = {
+        ...userInfo,
+        epcRating: propertyInfo.epcRating || ''
+      };
+      
+      // Filter eligible benefit plans
+      const eligibleSchemes = Object.entries(ukEnergySchemes)
+        .filter(([key, scheme]) => scheme.eligibility(combinedInfo))
+        .sort((a, b) => a[1].priority - b[1].priority);
+      
+      if (eligibleSchemes.length === 0) {
+        welfareOptionsContainer.innerHTML = '<p style="color: #64748b;">Sorry, based on the information you provided, there are currently no eligible benefit plans.</p>';
+        return;
+      }
+      
+      welfareOptionsContainer.innerHTML = '';
+      
+      eligibleSchemes.forEach(([key, scheme]) => {
+        const welfareDiv = document.createElement('div');
+        welfareDiv.className = 'welfare-option';
+        welfareDiv.innerHTML = `
+          <label class="option-label">
+            <input type="checkbox" name="welfareOption" value="${key}" data-amount="${scheme.maxAmount}">
+            <span>
+              <div style="font-weight:600;font-size:1.1rem;">${scheme.name}</div>
+              <div style="color:#64748b;font-size:0.97rem;margin:0.3rem 0 0.5rem 0;">${scheme.description}</div>
+              <div style="color:#14b8a6;font-weight:600;">Maximum Grant: £${scheme.maxAmount.toLocaleString()}</div>
+            </span>
+          </label>
+        `;
+        welfareOptionsContainer.appendChild(welfareDiv);
+      });
+    }
+
+    // Calculate total benefits in real-time
+    function updateWelfareTotal() {
+      const selectedWelfare = Array.from(document.querySelectorAll('input[name="welfareOption"]:checked')).map(cb => cb.value);
+      let welfareAmount = 0;
+      
+      selectedWelfare.forEach(schemeKey => {
+        const scheme = ukEnergySchemes[schemeKey];
+        if (scheme) {
+          welfareAmount += scheme.maxAmount;
+        }
+      });
+      
+      document.getElementById('totalWelfare').textContent = '£' + welfareAmount.toLocaleString();
+    }
+    
+    // Form submission handling
+    document.getElementById('welfareSelectionForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Multiple benefit selection
+      const selectedWelfare = Array.from(document.querySelectorAll('input[name="welfareOption"]:checked')).map(cb => cb.value);
+      if (selectedWelfare.length === 0) {
+        alert('Please select a benefit plan');
+        return;
+      }
+      
+      // Calculate total benefit amount
+      let welfareAmount = 0;
+      selectedWelfare.forEach(schemeKey => {
+        const scheme = ukEnergySchemes[schemeKey];
+        if (scheme) {
+          welfareAmount += scheme.maxAmount;
+        }
+      });
+      
+      // Save benefit selection information
+      const welfareData = {
+        selectedWelfare,
+        welfareAmount
+      };
+      sessionStorage.setItem('welfareSelection', JSON.stringify(welfareData));
+      
+      // Determine next step based on user profile
+      const userProfile = sessionStorage.getItem('userProfile');
+      if (userProfile === 'D') {
+        // Type D users navigate to bank information page after selecting benefits
+        window.location.href = 'bank-info.html';
+      } else {
+        // Other users navigate to contractor selection page
+        window.location.href = 'contractor-selection.html';
+      }
+    });
+  </script>
+</body>
+</html> 

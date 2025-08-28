@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Loan Selection</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="formal.css">
+  <script src="step-progress.js"></script>
+</head>
+<body class="main-bg">
+  <div class="card">
+    <div class="step-indicator" id="stepIndicator">
+    </div>
+
+    <div class="main-title">Select Loan Plan</div>
+    <div class="desc">Based on your information, we recommend the following UK bank loan plans</div>
+    
+    <!-- Cost breakdown information box, styled consistently with funding support information box -->
+    <div id="costBreakdown" class="funding-info" style="display: none;">
+      <h3 class="funding-info-title">Cost Breakdown</h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.9rem;">
+        <div><strong>Total Improvement Cost: </strong><span id="totalImprovementCost">£0</span></div>
+        <div><strong>Selected Benefit Amount: </strong><span id="selectedWelfareAmount">£0</span></div>
+        <div><strong>Remaining Amount to Pay: </strong><span id="requiredLoanAmount">£0</span></div>
+      </div>
+    </div>
+    
+    <form id="loanForm">
+      <div id="loanOptions" class="option-list">
+        <!-- Loan plans will be dynamically generated via JavaScript -->
+      </div>
+      
+      <button type="submit" class="btn-main full-width">Next</button>
+    </form>
+  </div>
+
+  <script>
+    // UK mainstream bank loan plan data
+    const ukBanks = {
+      barclays: {
+        name: 'Barclays Bank',
+        baseRate: 4.5,
+        maxLoanRatio: 0.85, // Maximum loan-to-income ratio
+        minIncome: 15000,
+        maxLoanAmount: 500000,
+        terms: [5, 10, 15, 20, 25]
+      },
+      hsbc: {
+        name: 'HSBC UK',
+        baseRate: 4.2,
+        maxLoanRatio: 0.8,
+        minIncome: 12000,
+        maxLoanAmount: 400000,
+        terms: [5, 10, 15, 20, 25]
+      },
+      lloyds: {
+        name: 'Lloyds Bank',
+        baseRate: 4.3,
+        maxLoanRatio: 0.82,
+        minIncome: 12000,
+        maxLoanAmount: 450000,
+        terms: [5, 10, 15, 20, 25]
+      },
+      natwest: {
+        name: 'NatWest',
+        baseRate: 4.4,
+        maxLoanRatio: 0.83,
+        minIncome: 12000,
+        maxLoanAmount: 480000,
+        terms: [5, 10, 15, 20, 25]
+      },
+      santander: {
+        name: 'Santander UK',
+        baseRate: 4.1,
+        maxLoanRatio: 0.78,
+        minIncome: 10000,
+        maxLoanAmount: 350000,
+        terms: [5, 10, 15, 20, 25]
+      },
+      nationwide: {
+        name: 'Nationwide Building Society',
+        baseRate: 4.0,
+        maxLoanRatio: 0.75,
+        minIncome: 10000,
+        maxLoanAmount: 400000,
+        terms: [5, 10, 15, 20, 25]
+      }
+    };
+
+    // Calculate monthly payment
+    function calculateMonthlyPayment(principal, annualRate, years) {
+      const monthlyRate = annualRate / 100 / 12;
+      const numberOfPayments = years * 12;
+      if (monthlyRate === 0) return principal / numberOfPayments;
+      return principal * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+    }
+
+    // Generate loan options based on user information
+    function generateLoanOptions() {
+      const bankInfo = JSON.parse(sessionStorage.getItem('bankInfo') || '{}');
+      const selectedImprovements = JSON.parse(sessionStorage.getItem('selectedImprovements') || '[]');
+      const welfareSelection = JSON.parse(sessionStorage.getItem('welfareSelection') || '{}');
+      const userProfile = sessionStorage.getItem('userProfile');
+      const employmentType = bankInfo.employmentType || '';
+      
+      // Calculate total improvement cost
+      const totalCost = selectedImprovements.reduce((sum, item) => sum + item.costValue, 0);
+      
+      // For D-type users, loan amount = improvement cost - selected benefit amount
+      let targetAmount = totalCost;
+      if (userProfile === 'D' && welfareSelection.welfareAmount) {
+        targetAmount = Math.max(0, totalCost - welfareSelection.welfareAmount);
+        
+        // Display cost breakdown information
+        const costBreakdown = document.getElementById('costBreakdown');
+        if (costBreakdown) {
+          costBreakdown.style.display = 'block';
+          document.getElementById('totalImprovementCost').textContent = totalCost;
+          document.getElementById('selectedWelfareAmount').textContent = welfareSelection.welfareAmount;
+          document.getElementById('requiredLoanAmount').textContent = targetAmount;
+        }
+      }
+      
+      // Get user information
+      const annualIncome = parseInt(bankInfo.annualIncome) || 26000;
+      const creditScore = parseInt(bankInfo.creditScore) || 700;
+      const workYears = parseInt(bankInfo.workYears) || 3;
+      const age = parseInt(bankInfo.age) || 35;
+      
+      const loanOptionsContainer = document.getElementById('loanOptions');
+      loanOptionsContainer.innerHTML = '';
+      
+      // If no improvement measures selected, provide standard loan plan
+      if (targetAmount <= 0) {
+        targetAmount = 5000; // Default £5000
+      }
+      
+      Object.keys(ukBanks).forEach(bankKey => {
+        const bank = ukBanks[bankKey];
+        // 1. Age check
+        if (age < 18) return;
+        // 2. Income check
+        if (annualIncome < bank.minIncome) return;
+        // 3. Employment type impact
+        if (employmentType === 'parttime' && annualIncome < bank.minIncome * 1.2) return;
+        if ((employmentType === 'selfemployed' || employmentType === 'business') && (workYears < 3 || annualIncome < bank.minIncome * 1.1)) return;
+        let maxLoan = Math.min(annualIncome * bank.maxLoanRatio, bank.maxLoanAmount, targetAmount);
+        let maxTerm = 25;
+        if (employmentType === 'retired') {
+          maxLoan = Math.min(maxLoan, 20000);
+          maxTerm = 10;
+        }
+        // 4. Work years impact
+        let adjustedRate = bank.baseRate;
+        if (workYears < 2) {
+          if (["barclays","lloyds","natwest"].includes(bankKey)) return;
+          adjustedRate += 0.5;
+        }
+        // 5. Credit score impact
+        if (creditScore < 600) return;
+        if (creditScore < 700) adjustedRate += 1.0;
+        if (creditScore >= 800) adjustedRate -= 0.5;
+        if (age >= 65) maxTerm = Math.min(maxTerm, 10);
+        if (age < 25) adjustedRate += 0.5;
+        adjustedRate = Math.max(adjustedRate, 1.0);
+        // Only generate one dynamic term loan plan
+        const loanAmount = maxLoan;
+          let dynamicMaxTerm = 1;
+          if (loanAmount >= 5000 && loanAmount < 10000) dynamicMaxTerm = 2;
+          else if (loanAmount >= 10000 && loanAmount < 20000) dynamicMaxTerm = 3;
+          else if (loanAmount >= 20000 && loanAmount < 50000) dynamicMaxTerm = 5;
+          else if (loanAmount >= 50000) dynamicMaxTerm = 10;
+        const term = Math.min(maxTerm, dynamicMaxTerm);
+            const monthlyPayment = calculateMonthlyPayment(loanAmount, adjustedRate, term);
+            const loanOption = document.createElement('label');
+            loanOption.innerHTML = `
+              <input type="radio" name="loanOption" value="${bankKey}_${term}_${loanAmount}">
+              <span>
+            <strong>${bank.name} - £${Math.round(loanAmount)} Loan</strong><br>
+                Annual Rate: ${adjustedRate.toFixed(2)}%, Term: ${term} years, Monthly Payment: £${monthlyPayment.toFixed(0)}
+              </span>
+            `;
+            loanOptionsContainer.appendChild(loanOption);
+      });
+      
+      // If no suitable loan plans
+      if (loanOptionsContainer.children.length === 0) {
+        loanOptionsContainer.innerHTML = '<p class="no-options">Based on your information, there are currently no suitable loan plans. Please check your age, income, employment type, work years, and credit score.</p>';
+      }
+    }
+
+    // Generate loan plans when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      generateLoanOptions();
+    });
+    
+    document.getElementById('loanForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const selectedLoan = document.querySelector('input[name="loanOption"]:checked');
+      if (!selectedLoan) {
+        alert('Please select a loan plan');
+        return;
+      }
+      // Save loan selection information
+      const loanData = {
+        selectedLoan: selectedLoan ? selectedLoan.value : null
+      };
+      sessionStorage.setItem('loanSelection', JSON.stringify(loanData));
+      // Determine next step based on user profile
+      const userProfile = sessionStorage.getItem('userProfile');
+      if (userProfile === 'D') {
+        // D-type users jump to contractor selection page after selecting loan
+        window.location.href = 'contractor-selection.html';
+      } else {
+        window.location.href = 'contractor-selection.html';
+      }
+    });
+  </script>
+</body>
+</html> 

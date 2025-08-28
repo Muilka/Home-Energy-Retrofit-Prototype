@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Benefit Eligibility Information Collection</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="formal.css">
+  <script src="step-progress.js"></script>
+</head>
+<body class="main-bg">
+  <div class="card">
+    <div class="step-indicator" id="stepIndicator">
+    </div>
+
+    <div class="main-title">Benefit Eligibility Information Collection</div>
+    <div class="desc">Please provide your personal information for assessing UK government energy subsidy benefit eligibility</div>
+    
+    <form id="welfareForm">
+      <div class="form-group">
+        <label for="age" class="form-label">Age</label>
+        <input type="number" id="age" name="age" class="form-input" required placeholder="Please enter your age" min="16" max="120">
+      </div>
+      
+      <div class="form-group">
+        <label for="householdIncome" class="form-label">Household Annual Income (£)</label>
+        <input type="number" id="householdIncome" name="householdIncome" class="form-input" required placeholder="Please enter household annual income" min="0">
+      </div>
+      
+      <div class="form-group">
+        <label for="householdSize" class="form-label">Household Size</label>
+        <input type="number" id="householdSize" name="householdSize" class="form-input" required placeholder="Please enter household size" min="1" max="10">
+      </div>
+      
+      <div class="form-group">
+        <label for="tenureType" class="form-label">Property Tenure Type</label>
+        <select id="tenureType" name="tenureType" class="form-input" required>
+          <option value="">Please select property tenure type</option>
+          <option value="owner_occupied">Owner occupied</option>
+          <option value="private_rented">Private rented</option>
+          <option value="social_rented">Social housing</option>
+          <option value="shared_ownership">Shared ownership</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="benefitsReceived" class="form-label">Are you currently receiving the following benefits?</label>
+        <div class="checkbox-group">
+          <label class="checkbox-item">
+            <input type="checkbox" name="benefitsReceived" value="universal_credit">
+            <span>Universal Credit</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="benefitsReceived" value="pension_credit">
+            <span>Pension Credit</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="benefitsReceived" value="income_support">
+            <span>Income Support</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="benefitsReceived" value="jobseekers_allowance">
+            <span>Jobseeker's Allowance</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="benefitsReceived" value="employment_support">
+            <span>Employment and Support Allowance</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="benefitsReceived" value="housing_benefit">
+            <span>Housing Benefit</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="benefitsReceived" value="child_tax_credit">
+            <span>Child Tax Credit</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="benefitsReceived" value="working_tax_credit">
+            <span>Working Tax Credit</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="benefitsReceived" value="none">
+            <span>None of the above</span>
+          </label>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="disabilityStatus" class="form-label">Do you have a disability or long-term health condition?</label>
+        <select id="disabilityStatus" name="disabilityStatus" class="form-input">
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="veteranStatus" class="form-label">Are you a military veteran?</label>
+        <select id="veteranStatus" name="veteranStatus" class="form-input">
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="energyVulnerable" class="form-label">Do you belong to an energy vulnerable group?</label>
+        <div class="checkbox-group">
+          <label class="checkbox-item">
+            <input type="checkbox" name="energyVulnerable" value="medical_equipment">
+            <span>Need medical equipment power supply</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="energyVulnerable" value="cold_sensitive">
+            <span>Particularly sensitive to cold</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="energyVulnerable" value="young_children">
+            <span>Have children under 5 at home</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="energyVulnerable" value="none">
+            <span>None of the above</span>
+          </label>
+        </div>
+      </div>
+      
+      <button type="submit" class="btn-main full-width">Next: Benefit Selection</button>
+    </form>
+  </div>
+
+  <script>
+    // Unified progress bar system will automatically handle progress bar display
+    
+    document.getElementById('welfareForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Get form data
+      const formData = new FormData(this);
+      const welfareData = Object.fromEntries(formData.entries());
+      
+      // Handle checkbox data
+      welfareData.benefitsReceived = Array.from(document.querySelectorAll('input[name="benefitsReceived"]:checked')).map(cb => cb.value);
+      welfareData.energyVulnerable = Array.from(document.querySelectorAll('input[name="energyVulnerable"]:checked')).map(cb => cb.value);
+      
+      // Validate required fields
+      if (!welfareData.age || !welfareData.householdIncome || !welfareData.householdSize || !welfareData.tenureType) {
+        alert('Please fill in all required fields');
+        return;
+      }
+      
+      if (welfareData.benefitsReceived.length === 0) {
+        alert('Please select the benefits you are currently receiving');
+        return;
+      }
+      
+      // Get EPC rating from property information (property type already collected in property information interface)
+      const propertyInfo = JSON.parse(sessionStorage.getItem('propertyInfo') || '{}');
+      welfareData.epcRating = propertyInfo.epcRating || '';
+      
+      // Save welfare information to sessionStorage
+      sessionStorage.setItem('welfareInfo', JSON.stringify(welfareData));
+      
+      // Navigate to benefit selection page
+      window.location.href = 'welfare-selection.html';
+    });
+  </script>
+</body>
+</html> 
