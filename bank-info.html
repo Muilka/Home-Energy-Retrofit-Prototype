@@ -23,7 +23,7 @@
       
       <div class="form-group">
         <label for="age" class="form-label">Age</label>
-        <input class="form-input" type="number" id="age" name="age" min="18" max="120" required placeholder="Please enter your age" readonly>
+        <input class="form-input" type="number" id="age" name="age" min="18" max="120" required placeholder="Please enter your age">
       </div>
       
       <div class="form-group">
@@ -33,7 +33,7 @@
       
       <div class="form-group">
         <label for="annualIncome" class="form-label">Annual Income (£)</label>
-        <input class="form-input" type="number" id="annualIncome" name="annualIncome" required placeholder="Please enter annual income" readonly>
+        <input class="form-input" type="number" id="annualIncome" name="annualIncome" required placeholder="Please enter annual income">
       </div>
       
       <div class="form-group">
@@ -50,7 +50,7 @@
       
       <div class="form-group">
         <label for="householdSize" class="form-label">Household Size</label>
-        <input class="form-input" type="number" id="householdSize" name="householdSize" required placeholder="Household size" readonly>
+        <input class="form-input" type="number" id="householdSize" name="householdSize" required placeholder="Household size">
       </div>
       
       <div class="form-group">
@@ -71,32 +71,72 @@
     // Auto-fill age, income, and household size information when page loads
     document.addEventListener('DOMContentLoaded', function() {
       const welfareInfo = JSON.parse(sessionStorage.getItem('welfareInfo') || '{}');
+      const userProfile = sessionStorage.getItem('userProfile');
       const ageInput = document.getElementById('age');
       const incomeInput = document.getElementById('annualIncome');
       const householdSizeInput = document.getElementById('householdSize');
       
+      // Check if user selected profile B (loan only) or D (loan + benefits)
+      const isLoanOnly = userProfile === 'B';
+      
       if (welfareInfo.age) {
         ageInput.value = welfareInfo.age;
+        ageInput.readOnly = true; // Make auto-filled field read-only to prevent inconsistency
+        ageInput.style.backgroundColor = '#f8f9fa'; // Visual indication that field is auto-filled
+        ageInput.title = 'This information was automatically filled from your benefit eligibility form';
+      } else if (isLoanOnly) {
+        // For loan-only profile, allow direct input
+        ageInput.placeholder = 'Please enter your age';
+        ageInput.disabled = false;
+        ageInput.readOnly = false;
+        ageInput.style.backgroundColor = ''; // Reset background color
+        ageInput.title = '';
       } else {
-        // If no age information, show prompt
+        // For other profiles, show prompt to complete benefit info first
         ageInput.placeholder = 'Please complete benefit eligibility information collection first';
         ageInput.disabled = true;
+        ageInput.style.backgroundColor = ''; // Reset background color
+        ageInput.title = '';
       }
       
       if (welfareInfo.householdIncome) {
         incomeInput.value = welfareInfo.householdIncome;
+        incomeInput.readOnly = true; // Make auto-filled field read-only to prevent inconsistency
+        incomeInput.style.backgroundColor = '#f8f9fa'; // Visual indication that field is auto-filled
+        incomeInput.title = 'This information was automatically filled from your benefit eligibility form';
+      } else if (isLoanOnly) {
+        // For loan-only profile, allow direct input
+        incomeInput.placeholder = 'Please enter annual income';
+        incomeInput.disabled = false;
+        incomeInput.readOnly = false;
+        incomeInput.style.backgroundColor = ''; // Reset background color
+        incomeInput.title = '';
       } else {
-        // If no income information, show prompt
+        // For other profiles, show prompt to complete benefit info first
         incomeInput.placeholder = 'Please complete benefit eligibility information collection first';
         incomeInput.disabled = true;
+        incomeInput.style.backgroundColor = ''; // Reset background color
+        incomeInput.title = '';
       }
       
       if (welfareInfo.householdSize) {
         householdSizeInput.value = welfareInfo.householdSize;
+        householdSizeInput.readOnly = true; // Make auto-filled field read-only to prevent inconsistency
+        householdSizeInput.style.backgroundColor = '#f8f9fa'; // Visual indication that field is auto-filled
+        householdSizeInput.title = 'This information was automatically filled from your benefit eligibility form';
+      } else if (isLoanOnly) {
+        // For loan-only profile, allow direct input
+        householdSizeInput.placeholder = 'Please enter household size';
+        householdSizeInput.disabled = false;
+        householdSizeInput.readOnly = false;
+        householdSizeInput.style.backgroundColor = ''; // Reset background color
+        householdSizeInput.title = '';
       } else {
-        // If no household size information, show prompt
+        // For other profiles, show prompt to complete benefit info first
         householdSizeInput.placeholder = 'Please complete benefit eligibility information collection first';
         householdSizeInput.disabled = true;
+        householdSizeInput.style.backgroundColor = ''; // Reset background color
+        householdSizeInput.title = '';
       }
     });
 
