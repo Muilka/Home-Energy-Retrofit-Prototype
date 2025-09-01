@@ -41,7 +41,7 @@
         name: 'Barclays Bank',
         baseRate: 4.5,
         maxLoanRatio: 0.85, // Maximum loan-to-income ratio
-        minIncome: 15000,
+        minIncome: 8000, // Reduced from 15000
         maxLoanAmount: 500000,
         terms: [5, 10, 15, 20, 25]
       },
@@ -49,7 +49,7 @@
         name: 'HSBC UK',
         baseRate: 4.2,
         maxLoanRatio: 0.8,
-        minIncome: 12000,
+        minIncome: 8000, // Reduced from 12000
         maxLoanAmount: 400000,
         terms: [5, 10, 15, 20, 25]
       },
@@ -57,7 +57,7 @@
         name: 'Lloyds Bank',
         baseRate: 4.3,
         maxLoanRatio: 0.82,
-        minIncome: 12000,
+        minIncome: 8000, // Reduced from 12000
         maxLoanAmount: 450000,
         terms: [5, 10, 15, 20, 25]
       },
@@ -65,7 +65,7 @@
         name: 'NatWest',
         baseRate: 4.4,
         maxLoanRatio: 0.83,
-        minIncome: 12000,
+        minIncome: 8000, // Reduced from 12000
         maxLoanAmount: 480000,
         terms: [5, 10, 15, 20, 25]
       },
@@ -73,7 +73,7 @@
         name: 'Santander UK',
         baseRate: 4.1,
         maxLoanRatio: 0.78,
-        minIncome: 10000,
+        minIncome: 7000, // Reduced from 10000
         maxLoanAmount: 350000,
         terms: [5, 10, 15, 20, 25]
       },
@@ -81,7 +81,7 @@
         name: 'Nationwide Building Society',
         baseRate: 4.0,
         maxLoanRatio: 0.75,
-        minIncome: 10000,
+        minIncome: 7000, // Reduced from 10000
         maxLoanAmount: 400000,
         terms: [5, 10, 15, 20, 25]
       }
@@ -141,27 +141,27 @@
         if (age < 18) return;
         // 2. Income check
         if (annualIncome < bank.minIncome) return;
-        // 3. Employment type impact
-        if (employmentType === 'parttime' && annualIncome < bank.minIncome * 1.2) return;
-        if ((employmentType === 'selfemployed' || employmentType === 'business') && (workYears < 3 || annualIncome < bank.minIncome * 1.1)) return;
+        // 3. Employment type impact - more lenient
+        if (employmentType === 'parttime' && annualIncome < bank.minIncome * 1.1) return; // Reduced from 1.2
+        if ((employmentType === 'selfemployed' || employmentType === 'business') && (workYears < 1 || annualIncome < bank.minIncome * 1.05)) return; // Reduced from 3 years and 1.1
         let maxLoan = Math.min(annualIncome * bank.maxLoanRatio, bank.maxLoanAmount, targetAmount);
         let maxTerm = 25;
         if (employmentType === 'retired') {
-          maxLoan = Math.min(maxLoan, 20000);
-          maxTerm = 10;
+          maxLoan = Math.min(maxLoan, 30000); // Increased from 20000
+          maxTerm = 15; // Increased from 10
         }
-        // 4. Work years impact
+        // 4. Work years impact - more lenient
         let adjustedRate = bank.baseRate;
-        if (workYears < 2) {
+        if (workYears < 1) { // Reduced from 2
           if (["barclays","lloyds","natwest"].includes(bankKey)) return;
           adjustedRate += 0.5;
         }
-        // 5. Credit score impact
-        if (creditScore < 600) return;
-        if (creditScore < 700) adjustedRate += 1.0;
+        // 5. Credit score impact - more lenient
+        if (creditScore < 400) return; // Reduced from 600
+        if (creditScore < 600) adjustedRate += 1.0; // Reduced from 700
         if (creditScore >= 800) adjustedRate -= 0.5;
-        if (age >= 65) maxTerm = Math.min(maxTerm, 10);
-        if (age < 25) adjustedRate += 0.5;
+        if (age >= 65) maxTerm = Math.min(maxTerm, 15); // Increased from 10
+        if (age < 25) adjustedRate += 0.3; // Reduced from 0.5
         adjustedRate = Math.max(adjustedRate, 1.0);
         // Only generate one dynamic term loan plan
         const loanAmount = maxLoan;
@@ -192,6 +192,22 @@
     // Generate loan plans when page loads
     document.addEventListener('DOMContentLoaded', function() {
       generateLoanOptions();
+      
+      // Add click event listeners to loan options for better UX
+      document.addEventListener('click', function(e) {
+        if (e.target.closest('label')) {
+          const label = e.target.closest('label');
+          const radio = label.querySelector('input[type="radio"]');
+          if (radio) {
+            // Uncheck all other radios
+            document.querySelectorAll('input[name="loanOption"]').forEach(r => {
+              r.checked = false;
+            });
+            // Check the clicked one
+            radio.checked = true;
+          }
+        }
+      });
     });
     
     document.getElementById('loanForm').addEventListener('submit', function(e) {
