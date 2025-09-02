@@ -156,12 +156,12 @@
           if (["barclays","lloyds","natwest"].includes(bankKey)) return;
           adjustedRate += 0.5;
         }
-        // 5. Credit score impact - more lenient
-        if (creditScore < 400) return; // Reduced from 600
-        if (creditScore < 600) adjustedRate += 1.0; // Reduced from 700
+        // 5. Credit score impact
+        if (creditScore < 400) return;
+        if (creditScore < 600) adjustedRate += 1.0;
         if (creditScore >= 800) adjustedRate -= 0.5;
-        if (age >= 65) maxTerm = Math.min(maxTerm, 15); // Increased from 10
-        if (age < 25) adjustedRate += 0.3; // Reduced from 0.5
+        if (age >= 65) maxTerm = Math.min(maxTerm, 15); 
+        if (age < 25) adjustedRate += 0.3;
         adjustedRate = Math.max(adjustedRate, 1.0);
         // Only generate one dynamic term loan plan
         const loanAmount = maxLoan;
